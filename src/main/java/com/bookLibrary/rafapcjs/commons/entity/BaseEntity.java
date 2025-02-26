@@ -10,6 +10,7 @@ import java.util.Date;
 
 @Getter
 @Setter
+@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public  abstract  class BaseEntity {
 
