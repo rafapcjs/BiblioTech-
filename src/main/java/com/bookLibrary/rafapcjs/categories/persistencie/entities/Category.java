@@ -6,12 +6,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Builder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 @Table(name = "categories")
 public class Category  extends BaseEntity {
 
@@ -20,4 +21,6 @@ public class Category  extends BaseEntity {
 
     @Column(name = "description", length = 255)
     private String description;
+
+
 }

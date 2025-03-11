@@ -15,7 +15,7 @@ public interface CategoryRepository  extends JpaRepository <Category, Long> {
     // anexar los metodos
     Optional<Category> findByName (String name);
     Optional<Category> findByDescription (String description);
- void deleteByUuid(UUID uuid);
+    void deleteByUuid(UUID uuid);
     Optional<Category> findByUuid (UUID uuid);
 
     Page<Category> findAll(Pageable pageable);

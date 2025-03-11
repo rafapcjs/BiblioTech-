@@ -43,25 +43,23 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Transactional
     public void update(CategoryPayload categoryPayload, UUID uuid) {
 
-        Optional<Category> findByUuid = categoryRepository.findByUuid(uuid);
+        Category category = categoryRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con UUID: " + uuid));
 
-        if (findByUuid.isPresent()){
-            Category category = findByUuid.orElseThrow();
-
-            category.setName(categoryPayload.getName());
-            category.setDescription(categoryPayload.getDescription());
-            categoryRepository.save(category);
-
-        }
-
+        category.setName(categoryPayload.getName());
+        category.setDescription(categoryPayload.getDescription());
+        categoryRepository.save(category);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<CategoryDto> findByDescription(String description) {
+    public CategoryDto findByDescription(String description) {
 
         return  this.categoryRepository.findByDescription(description)
-                .map(category -> categoryFactory.createCategoryDto(category));
+                .map(category -> categoryFactory.createCategoryDto(category)
+
+
+                ).orElseThrow(()->new EntityNotFoundException(" categoria no encontrada : " + description));
 
 
 
@@ -69,29 +67,28 @@ public class CategoryServicesImpl implements ICategoryServices {
         @Override
         @Transactional(readOnly = true)
 
-        public Optional<CategoryDto> findByUuid(UUID uuid) {
+        public CategoryDto findByUuid(UUID uuid) {
             return  this.categoryRepository.findByUuid(uuid)
-                    .map(category -> categoryFactory.createCategoryDto(category));
+                    .map(category -> categoryFactory.createCategoryDto(category))
+                    .orElseThrow(()->new EntityNotFoundException(" categoria no encontrada : " + uuid));
 
         }
 
     @Override
     @Transactional(readOnly = true)
-
-    public Optional<CategoryDto> findByName(String name) {
-        return  this.categoryRepository.findByDescription(name)
-                .map(category -> categoryFactory.createCategoryDto(category));
-
+    public CategoryDto findByName(String name) {
+        return categoryRepository.findByName(name)
+                .map(categoryFactory::createCategoryDto)  // ← Si `createCategoryDto` retorna un `Category`
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con nombre: " + name));
     }
+
 
     @Override
     @Transactional()
 
     public void deleteByUuid(UUID uuid) {
-        Optional<Category> findByUuid = categoryRepository.findByUuid(uuid);
-if (findByUuid.isPresent()){
-    categoryRepository.deleteByUuid(uuid);
-}
+        Category findByUuid = categoryRepository.findByUuid(uuid).orElseThrow( () -> new EntityNotFoundException("categoria no encontrada con UUID: " + uuid));
+        categoryRepository.delete(findByUuid);
 
     }
 

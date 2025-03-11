@@ -20,7 +20,7 @@ public  abstract  class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private Long id;
 
 
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -29,24 +29,19 @@ public  abstract  class BaseEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    @Column(nullable = false , updatable = false, name = "create_date")
+    @Column(nullable = false, updatable = false, name = "create_date")
     private Date createDate;
-
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_date")
     private Date updateDate;
 
-
     @PrePersist
-    public void generateUuid() {
-        uuid = UUID.randomUUID();
-    }
+    protected void prePersist() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID();  // Genera UUID antes de insertar
+        }
 
-    @PreUpdate
-    public  void preUpdate (){
-        updateDate =new Date();
     }
-
 }

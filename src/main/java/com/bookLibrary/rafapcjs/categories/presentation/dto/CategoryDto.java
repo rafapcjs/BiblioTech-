@@ -1,14 +1,26 @@
 package com.bookLibrary.rafapcjs.categories.presentation.dto;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.util.UUID;
-
 @Builder
+@Getter
+@Setter
+public class CategoryDto
+{
 
-public record CategoryDto  (
 
 
-        String name , String description , UUID uuid
-){
+
+
+     private  String name ;
+
+    private String description  ;
+
+    private  UUID uuid ;
+
+
 }

@@ -14,10 +14,10 @@ public interface ICategoryServices {
     //payload guardar y actualizar
     void save (CategoryPayload categoryPayload);
     void update (CategoryPayload  CategoryPayload , UUID uuid) ;
-    Optional<CategoryDto> findByDescription (String description);
-    Optional<CategoryDto> findByUuid (UUID uuid);
+    CategoryDto findByDescription (String description);
+    CategoryDto findByUuid (UUID uuid);
 
-    Optional<CategoryDto> findByName (String name);
+    CategoryDto findByName (String name);
     void  deleteByUuid ( UUID uuid);
     Page<CategoryDto> findAll(Pageable pageable);
 
