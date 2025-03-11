@@ -3,11 +3,15 @@ package com.bookLibrary.rafapcjs.categories.presentation.controller;
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
 import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
+import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +26,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1/category")
 public class CategoryController {
 
-    final  private ICategoryServices iCategoryServices ;
+      private  final ICategoryServices iCategoryServices ;
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody  CategoryPayload  categoryPayload) throws URISyntaxException {
+    public ResponseEntity<?> create( @Valid  @RequestBody  CategoryPayload  categoryPayload) throws URISyntaxException {
 
         iCategoryServices.save(categoryPayload);
 
@@ -43,9 +47,9 @@ public class CategoryController {
             @RequestParam (defaultValue = "asc"  )String direction)
 
     {
+        Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
 
-    Pageable pageable = PageRequest.of(page,size,direction.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending());
-return ResponseEntity.ok(iCategoryServices.findAll(pageable));
+        return ResponseEntity.ok(iCategoryServices.findAll(pageable));
 
 
 
@@ -53,7 +57,7 @@ return ResponseEntity.ok(iCategoryServices.findAll(pageable));
 
     @PutMapping("/update/{uuid}")
 
-    public ResponseEntity<?> update( @RequestBody CategoryPayload  categoryPayload ,   @PathVariable UUID uuid) {
+    public ResponseEntity<?> update( @Valid @RequestBody CategoryPayload  categoryPayload ,   @PathVariable UUID uuid) {
  iCategoryServices.update(categoryPayload, uuid);
  return ResponseEntity.noContent().build();
 

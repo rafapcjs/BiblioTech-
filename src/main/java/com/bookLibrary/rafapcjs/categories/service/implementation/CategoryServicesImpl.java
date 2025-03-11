@@ -6,6 +6,7 @@ import com.bookLibrary.rafapcjs.categories.persistencie.repositories.CategoryRep
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
 import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -59,7 +60,7 @@ public class CategoryServicesImpl implements ICategoryServices {
                 .map(category -> categoryFactory.createCategoryDto(category)
 
 
-                ).orElseThrow(()->new EntityNotFoundException(" categoria no encontrada : " + description));
+                ).orElseThrow(()->new ResourceNotFoundException(" categoria no encontrada : " + description));
 
 
 
@@ -70,7 +71,7 @@ public class CategoryServicesImpl implements ICategoryServices {
         public CategoryDto findByUuid(UUID uuid) {
             return  this.categoryRepository.findByUuid(uuid)
                     .map(category -> categoryFactory.createCategoryDto(category))
-                    .orElseThrow(()->new EntityNotFoundException(" categoria no encontrada : " + uuid));
+                    .orElseThrow(()->new ResourceNotFoundException(" categoria no encontrada : " + uuid));
 
         }
 
@@ -79,7 +80,7 @@ public class CategoryServicesImpl implements ICategoryServices {
     public CategoryDto findByName(String name) {
         return categoryRepository.findByName(name)
                 .map(categoryFactory::createCategoryDto)  // ← Si `createCategoryDto` retorna un `Category`
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con nombre: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con nombre: " + name));
     }
 
 
@@ -87,21 +88,17 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Transactional()
 
     public void deleteByUuid(UUID uuid) {
-        Category findByUuid = categoryRepository.findByUuid(uuid).orElseThrow( () -> new EntityNotFoundException("categoria no encontrada con UUID: " + uuid));
+        Category findByUuid = categoryRepository.findByUuid(uuid).orElseThrow( () -> new ResourceNotFoundException("categoria no encontrada con UUID: " + uuid));
         categoryRepository.delete(findByUuid);
 
     }
 
     @Override
     @Transactional(readOnly = true)
-
     public Page<CategoryDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(categoryFactory::createCategoryDto);
+    }
 
-        Page<Category>categoryPage= categoryRepository.findAll(pageable);
 
-        List<CategoryDto> categoryDtoList = categoryPage.stream() .map(category ->    categoryFactory.createCategoryDto(category))
-                .collect(Collectors.toList());
-
-        return  new PageImpl<>(categoryDtoList , pageable ,categoryPage.getTotalElements());
-     }
 }
