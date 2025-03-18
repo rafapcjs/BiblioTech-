@@ -92,13 +92,11 @@ public class CategoryServicesImpl implements ICategoryServices {
         categoryRepository.delete(findByUuid);
 
     }
-
     @Override
     @Transactional(readOnly = true)
     public Page<CategoryDto> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
                 .map(categoryFactory::createCategoryDto);
     }
-
 
 }

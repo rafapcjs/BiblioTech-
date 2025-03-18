@@ -1,8 +1,11 @@
 package com.bookLibrary.rafapcjs.commons.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,8 +13,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 import java.util.UUID;
-
+@SuperBuilder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor sin argumentos con visibilidad protegida
+
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

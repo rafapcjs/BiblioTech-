@@ -5,12 +5,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-
-@Builder
-@Entity
+@SuperBuilder
+ @Entity
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PUBLIC) // Constructor sin argumentos público
 @Setter
 @Getter
 @Table(name = "categories")
