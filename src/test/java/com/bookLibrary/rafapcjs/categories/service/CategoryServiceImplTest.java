@@ -80,7 +80,27 @@ public class CategoryServiceImplTest {
         // Verifica que el método save() se haya llamado una vez
         verify(categoryRepository, times(1)).save(CATEGORY_PREPARED);
     }
+    @Test
+    void saveCategory() {
+        CategoryPayload payload = new CategoryPayload();
+        payload.setName("New Category");
+        payload.setDescription("New Description");
 
+        Category newCategory = Category.builder()
+                .uuid(UUID.randomUUID())
+                .name(payload.getName())
+                .description(payload.getDescription())
+                .build();
+
+        when(modelMapper.map(payload, Category.class)).thenReturn(newCategory);
+        when(categoryRepository.save(any())).thenReturn(newCategory);
+
+        // Llama al método sin esperar un retorno
+        categoryServices.save(payload);
+
+        // Verifica que save() se haya ejecutado una vez
+        verify(categoryRepository, times(1)).save(any());
+    }
 
 
 
