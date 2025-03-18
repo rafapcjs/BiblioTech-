@@ -24,12 +24,13 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Extiende el test con Mockito para inyección de dependencias
+@ExtendWith(MockitoExtension.class) // Habilita Mockito en las pruebas
 public class CategoryServiceImplTest {
 
     @Mock // Simula el repositorio de categorías
     private CategoryRepository categoryRepository;
-    @Mock
+
+    @Mock // Simula el mapeador de objetos
     private ModelMapper modelMapper;
 
     @InjectMocks // Inyecta los mocks en la implementación del servicio
@@ -41,7 +42,7 @@ public class CategoryServiceImplTest {
     // UUID aleatorio para pruebas
     private final UUID randomUUID = UUID.randomUUID();
 
-    // Categoría de prueba inicial
+    // Categoría de prueba predefinida
     private final Category CATEGORY_PREPARED = Category.builder()
             .id(1L)
             .uuid(randomUUID)
@@ -55,6 +56,7 @@ public class CategoryServiceImplTest {
             .description("Test Description")
             .uuid(randomUUID)
             .build();
+
     // Categoría modificada para prueba de actualización
     private final Category CATEGORY_MODIFIED_PREPARED = Category.builder()
             .id(1L)
@@ -63,23 +65,26 @@ public class CategoryServiceImplTest {
             .description("Prepare Draw Modified")
             .build();
 
-
-
+    /**
+     * Prueba unitaria para actualizar una categoría.
+     * Se verifica que el método `save` del repositorio se llame una vez.
+     */
     @Test
     void update() {
         UUID testUUID = CATEGORY_PREPARED.getUuid();
-        // Simula la búsqueda de la categoría en el repositorio
         when(categoryRepository.findByUuid(testUUID)).thenReturn(Optional.of(CATEGORY_PREPARED));
 
-        // Convierte la categoría modificada en un payload para la actualización
         CategoryPayload payload = CategoryPayload.fromCategory(CATEGORY_MODIFIED_PREPARED);
 
-        // Llama al método de actualización
         categoryServices.update(payload, testUUID);
 
-        // Verifica que el método save() se haya llamado una vez
         verify(categoryRepository, times(1)).save(CATEGORY_PREPARED);
     }
+
+    /**
+     * Prueba unitaria para guardar una nueva categoría.
+     * Se verifica que el método `save` del repositorio se haya ejecutado una vez.
+     */
     @Test
     void saveCategory() {
         CategoryPayload payload = new CategoryPayload();
@@ -95,16 +100,15 @@ public class CategoryServiceImplTest {
         when(modelMapper.map(payload, Category.class)).thenReturn(newCategory);
         when(categoryRepository.save(any())).thenReturn(newCategory);
 
-        // Llama al método sin esperar un retorno
         categoryServices.save(payload);
 
-        // Verifica que save() se haya ejecutado una vez
         verify(categoryRepository, times(1)).save(any());
     }
 
-
-
-
+    /**
+     * Prueba unitaria para buscar una categoría por UUID.
+     * Se verifica que el nombre coincida con el esperado.
+     */
     @Test
     void findByUuid() {
         when(categoryRepository.findByUuid(randomUUID)).thenReturn(Optional.of(CATEGORY_PREPARED));
@@ -114,6 +118,10 @@ public class CategoryServiceImplTest {
         assertEquals("Test Category", foundCategory.getName());
     }
 
+    /**
+     * Prueba unitaria para buscar una categoría por nombre.
+     * Se verifica que el nombre coincida con el esperado.
+     */
     @Test
     void findByName() {
         when(categoryRepository.findByName("Test Category")).thenReturn(Optional.of(CATEGORY_PREPARED));
@@ -123,6 +131,10 @@ public class CategoryServiceImplTest {
         assertEquals("Test Category", foundCategory.getName());
     }
 
+    /**
+     * Prueba unitaria para buscar una categoría por descripción.
+     * Se verifica que la descripción coincida con la esperada.
+     */
     @Test
     void findByDescription() {
         when(categoryRepository.findByDescription("Test Description")).thenReturn(Optional.of(CATEGORY_PREPARED));
@@ -132,6 +144,10 @@ public class CategoryServiceImplTest {
         assertEquals("Test Description", foundCategory.getDescription());
     }
 
+    /**
+     * Prueba unitaria para eliminar una categoría por UUID.
+     * Se verifica que el método `delete` del repositorio se llame una vez.
+     */
     @Test
     void deleteByUuid() {
         UUID testUUID = CATEGORY_PREPARED.getUuid();
@@ -142,6 +158,10 @@ public class CategoryServiceImplTest {
         verify(categoryRepository, times(1)).delete(CATEGORY_PREPARED);
     }
 
+    /**
+     * Prueba unitaria para listar categorías con paginación.
+     * Se verifica que el número total de elementos sea 1 y que el nombre coincida con el esperado.
+     */
     @Test
     void listCategoriesWithPagination() {
         Pageable pageable = PageRequest.of(0, 10);
