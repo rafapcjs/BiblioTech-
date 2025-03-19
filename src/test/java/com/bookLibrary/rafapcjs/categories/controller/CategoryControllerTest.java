@@ -33,41 +33,45 @@ import java.util.Arrays;
 
 import java.util.List;
 import java.util.UUID;
-  @WebMvcTest(CategoryController.class)
+
+import java.util.UUID;
+@WebMvcTest(CategoryController.class) // Esta anotación se utiliza para probar el CategoryController de forma aislada, sin iniciar el contexto completo de Spring.
 public class CategoryControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // Se utiliza para realizar las solicitudes HTTP y verificar las respuestas en las pruebas.
 
     @MockitoBean
-    private ICategoryServices iCategoryServices;
+    private ICategoryServices iCategoryServices; // Se simula la interfaz ICategoryServices utilizando @MockitoBean para simular la capa de servicios.
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // El ObjectMapper se usa para convertir objetos Java en JSON y viceversa.
 
+    // Crear algunos objetos CategoryDto predefinidos que se usarán en las pruebas.
     private final CategoryDto CATEGORY_01 = new CategoryDto(UUID.randomUUID(), "Tecnología", "Categoría relacionada con la tecnología.");
     private final CategoryDto CATEGORY_02 = new CategoryDto(UUID.randomUUID(), "Medicina", "Categoría relacionada con la medicina.");
     private final CategoryDto CATEGORY_03 = new CategoryDto(UUID.randomUUID(), "Química", "Categoría relacionada con la química.");
 
+    // Método de prueba para listar categorías y verificar la respuesta.
     @Test
     void listarCategorias() throws Exception {
-        // Crear una lista de CategoryDto de ejemplo
+        // Crear una lista de objetos CategoryDto
         List<CategoryDto> categoryDtos = Arrays.asList(CATEGORY_01, CATEGORY_02, CATEGORY_03);
-        Page<CategoryDto> page = new PageImpl<>(categoryDtos);
+        Page<CategoryDto> page = new PageImpl<>(categoryDtos); // Envolver la lista en un objeto Page para simular la paginación.
 
-        // Simular el comportamiento del servicio
+        // Simular el comportamiento del servicio devolviendo la página simulada cuando se llame al método del servicio
         when(iCategoryServices.findAll(Mockito.any(Pageable.class))).thenReturn(page);
 
-        // Realizar la solicitud GET y verificar la respuesta
-         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("sortBy", "name")
-                        .param("direction", "asc")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()) // Imprime la solicitud y la respuesta en la consola
-                .andExpect(status().isOk()) // Verificar que el status sea 200
-                .andExpect(jsonPath("$.content", hasSize(3))) // Verificar que hay 3 categorías
-                .andExpect(jsonPath("$.content[0].name").value("Tecnología")); // Verificar el nombre de la primera categoría
+        // Realizar la solicitud GET a /api/v1/category con parámetros de paginación
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category")
+                        .param("page", "0") // Número de página
+                        .param("size", "10") // Tamaño de la página
+                        .param("sortBy", "name") // Ordenar por nombre
+                        .param("direction", "asc") // Dirección de orden (ascendente)
+                        .contentType(MediaType.APPLICATION_JSON)) // Tipo de contenido de la solicitud
+                .andDo(print()) // Imprimir la solicitud y la respuesta para depuración
+                .andExpect(status().isOk()) // Esperar un estado 200 (OK)
+                .andExpect(jsonPath("$.content", hasSize(3))) // Verificar que la respuesta contiene 3 categorías
+                .andExpect(jsonPath("$.content[0].name").value("Tecnología")); // Verificar el nombre de la primera categoría en la respuesta
     }
 }
