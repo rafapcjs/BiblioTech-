@@ -19,7 +19,6 @@ public interface ICategoryServices {
 
     CategoryDto findByName (String name);
     void  deleteByUuid ( UUID uuid);
-    Page<CategoryDto> findAll(Pageable pageable);
-
+    Page<CategoryDto> findAll(Pageable pageable); // Devuelve un Page<CategoryDto>
 
 }

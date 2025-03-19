@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.UUID;
 
-@SpringBootApplication
-@EnableJpaAuditing
-public class RafapcjsApplication {
+ @SpringBootApplication(scanBasePackages = "com.bookLibrary.rafapcjs")
+
+ public class RafapcjsApplication {
 
 	public static void main(String[] args) {
 

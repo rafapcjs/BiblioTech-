@@ -6,8 +6,9 @@ import org.springframework.data.domain.Sort;
 
 
 public class PageableUtil {
+
     public static Pageable createPageable(int page, int size, String sortBy, String direction) {
-        return PageRequest.of(page, size,
-                direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        return PageRequest.of(page, size, sort);
     }
 }

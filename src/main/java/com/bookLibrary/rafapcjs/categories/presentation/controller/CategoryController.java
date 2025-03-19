@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.domain.Sort;
@@ -38,22 +39,19 @@ public class CategoryController {
 
     }
 
-    @GetMapping()
+
+    @GetMapping
     public ResponseEntity<?> getAll(
-
-            @RequestParam (defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam (defaultValue = "name"  )String sortBy,
-            @RequestParam (defaultValue = "asc"  )String direction)
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
 
-    {
         Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-
-        return ResponseEntity.ok(iCategoryServices.findAll(pageable));
-
-
-
+        Page<CategoryDto> categories = iCategoryServices.findAll(pageable);
+        return ResponseEntity.ok(categories);
     }
+
 
     @PutMapping("/update/{uuid}")
 
