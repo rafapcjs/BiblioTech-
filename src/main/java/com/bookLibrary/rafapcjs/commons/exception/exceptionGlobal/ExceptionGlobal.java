@@ -18,9 +18,8 @@ public class ExceptionGlobal {
 
     // Manejo del error 404: Recurso no encontrado.
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handle404(ResourceNotFoundException ex) {
-        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "Not Found", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     // Manejo del error 403: Acceso denegado.

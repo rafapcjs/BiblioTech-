@@ -5,6 +5,7 @@ import com.bookLibrary.rafapcjs.categories.presentation.controller.CategoryContr
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
 import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,8 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -109,6 +109,67 @@ public class CategoryControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isCreated()); // Verificamos que la respuesta sea 201 (CREATED)
     }
+
+
+    @Test
+    void testUpdateCategory() throws Exception {
+        // 🔨 Creamos el payload que simula la solicitud del cliente
+        CategoryPayload categoryPayload = CategoryPayload.builder()
+                .name("Chemistry")
+                .description("Descripción de Chemistry")
+                .build();
+
+        // 🔄 Simulamos el DTO que devuelve el método findByUuid()
+        CategoryDto categoryDto = new CategoryDto(
+                CATEGORY_01.getUuid(),
+                "Old Name",
+                "Old Description"
+        );
+
+        // 🔄 Simulamos el servicio para encontrar la categoría por UUID
+        when(iCategoryServices.findByUuid(CATEGORY_01.getUuid()))
+                .thenReturn(categoryDto);  // ⚠️ Retornar un DTO, no un Optional<UUID>
+
+        // 🔄 Simulamos la actualización sin retorno
+        doNothing().when(iCategoryServices).update(Mockito.any(CategoryPayload.class), Mockito.eq(CATEGORY_01.getUuid()));
+
+        // 🚀 Construimos la petición HTTP simulada al endpoint PUT
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/api/v1/category/update/{uuid}", CATEGORY_01.getUuid())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryPayload));
+
+        // ✅ Ejecutamos la petición y validamos que la respuesta tenga el status 204 No Content
+        mockMvc.perform(request)
+                .andExpect(status().isNoContent()); // ✅ Código correcto para una actualización sin respuesta
+    }
+
+
+
+    @Test
+    void testUpdateCategory_NotFound() throws Exception {
+        // 🔄 Simulamos que el servicio lanza ResourceNotFoundException
+        doThrow(new ResourceNotFoundException("No se encontró la categoría con el UUID dado"))
+                .when(iCategoryServices).update(Mockito.any(CategoryPayload.class), Mockito.any(UUID.class));
+
+        // 🔨 Creamos el payload de prueba
+        CategoryPayload categoryPayload = CategoryPayload.builder()
+                .name("Chemistry")
+                .description("Descripción de Chemistry")
+                .build();
+
+        // 🚀 Construimos la petición HTTP simulada al endpoint PUT
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/api/v1/category/update/{uuid}", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryPayload));
+
+        // ✅ Ejecutamos la petición y validamos que la respuesta tenga el status 404 Not Found
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound())  // ✅ Esperamos 404
+                .andExpect(content().string("No se encontró la categoría con el UUID dado")); // Opcional: validar el mensaje
+    }
+
 
 
 }

@@ -43,13 +43,13 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Override
     @Transactional
     public void update(CategoryPayload categoryPayload, UUID uuid) {
-
+        // 🔎 Si la categoría no existe, lanza la excepción y detiene la ejecución
         Category category = categoryRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con UUID: " + uuid));
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría con UUID: " + uuid));
 
+        // ✅ Si existe, actualizar
         category.setName(categoryPayload.getName());
         category.setDescription(categoryPayload.getDescription());
-        categoryRepository.save(category);
     }
 
     @Override
