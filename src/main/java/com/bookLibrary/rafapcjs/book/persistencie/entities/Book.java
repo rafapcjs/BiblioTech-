@@ -5,7 +5,6 @@ import com.bookLibrary.rafapcjs.categories.persistencie.entities.Category;
 import com.bookLibrary.rafapcjs.commons.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.EnableMBeanExport;
 
 import java.time.LocalDate;
 import java.util.Set;
