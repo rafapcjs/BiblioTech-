@@ -1,7 +1,11 @@
 package com.bookLibrary.rafapcjs.user.persistence.repositories;
 
-import com.bookLibrary.rafapcjs.user.persistence.entities.User;
+import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    Optional<UserEntity> findUserEntityByUsername(String username);
 }
