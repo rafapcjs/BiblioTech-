@@ -2,7 +2,7 @@ package com.bookLibrary.rafapcjs.security.auth.service.login;
 
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
-import com.bookLibrary.rafapcjs.security.utils.JwtUtil;
+import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 public class AuthLoginService {
     private final CustomsDetailServices userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse login(AuthLoginRequest request) {
         Authentication auth = authenticate(request.username(), request.password());
-        String token = jwtUtil.createToken(auth);
+        String token = jwtTokenProvider.createToken(auth);
         return new AuthResponse(request.username(), "Login successful", token, true);
     }
 

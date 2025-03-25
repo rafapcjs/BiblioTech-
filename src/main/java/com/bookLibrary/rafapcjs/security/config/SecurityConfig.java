@@ -1,12 +1,13 @@
-package com.bookLibrary.rafapcjs.security.auth.config;
+package com.bookLibrary.rafapcjs.security.config;
 
-import com.bookLibrary.rafapcjs.security.auth.jwt.JwtTokenValidator;
-import com.bookLibrary.rafapcjs.security.utils.JwtUtil;
+import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenValidator;
+import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,15 +21,16 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private JwtUtil jwtUtil;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(http -> {
+
                     // Endpoints públicos
                     http.requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/users/log-in").permitAll();
@@ -53,7 +55,7 @@ public class SecurityConfig {
                     http.anyRequest().denyAll();
                 })
 
-                .addFilterBefore(new JwtTokenValidator(jwtUtil), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidator(jwtTokenProvider), BasicAuthenticationFilter.class)
                 .build();
     }
 

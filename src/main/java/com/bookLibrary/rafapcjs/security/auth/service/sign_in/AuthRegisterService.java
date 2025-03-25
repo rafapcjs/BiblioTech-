@@ -5,7 +5,7 @@ import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.auth.factory.AuthUserMapper;
 import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;
 import com.bookLibrary.rafapcjs.security.auth.persistence.repositories.RoleRepository;
-import com.bookLibrary.rafapcjs.security.utils.JwtUtil;
+import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import com.bookLibrary.rafapcjs.user.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthRegisterService {
 
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,7 +39,7 @@ public class AuthRegisterService {
         userRepository.save(user);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authUserMapper.mapRoles(user.getRoles()));
-        String token = jwtUtil.createToken(authentication);
+        String token = jwtTokenProvider.createToken(authentication);
 
         return new AuthResponse(user.getUsername(), "User created successfully", token, true);
     }

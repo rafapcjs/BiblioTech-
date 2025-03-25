@@ -1,4 +1,4 @@
-package com.bookLibrary.rafapcjs.security.utils;
+package com.bookLibrary.rafapcjs.security.utils.jwt;
 
 
 import com.auth0.jwt.JWT;
@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Component
-public class JwtUtil {
+public class JwtTokenProvider {
 
     @Value("${security.jwt.key.private}")
     private String privateKey;
