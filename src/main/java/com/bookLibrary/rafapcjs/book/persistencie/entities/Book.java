@@ -25,9 +25,9 @@ public class Book  extends BaseEntity {
     @Column (nullable = false)
      private String  isbn;
 
+ private  boolean status =true;
 
-    private String code;
-    // Relación ManyToOne: Muchos libros pueden pertenecer a una sola categoría.
+     // Relación ManyToOne: Muchos libros pueden pertenecer a una sola categoría.
     @ManyToOne(fetch = FetchType.LAZY) // Carga diferida para optimizar rendimiento
     @JoinColumn(name = "category_id") // Clave foránea en la tabla de libros
     private Category category;
