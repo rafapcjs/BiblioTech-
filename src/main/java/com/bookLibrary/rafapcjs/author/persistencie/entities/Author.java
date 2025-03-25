@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,5 +19,11 @@ public class Author  extends BaseEntity {
 
     @Column(name = "full_name" , nullable = false)
     private String fullName ;
+
+    @Column(name = "birth_date")
+    private String birthDate;
+
+    @Column(name = "nationality")
+    private String nationality;
 
 }
