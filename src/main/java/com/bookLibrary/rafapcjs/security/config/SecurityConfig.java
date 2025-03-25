@@ -33,7 +33,7 @@ public class SecurityConfig {
 
                     // Endpoints públicos
                     http.requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll();
-                    http.requestMatchers(HttpMethod.POST, "/api/v1/users/log-in").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll();
 
 
                     // Endpoints solo para ADMIN

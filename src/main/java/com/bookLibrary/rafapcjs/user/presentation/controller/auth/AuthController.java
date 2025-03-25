@@ -47,7 +47,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Credenciales inválidas o error en la solicitud"),
             @ApiResponse(responseCode = "401", description = "No autorizado, credenciales incorrectas")
     })
-    @PostMapping("/log-in")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest){
         return new ResponseEntity<>(this.authService.login(userRequest), HttpStatus.OK);
     }
