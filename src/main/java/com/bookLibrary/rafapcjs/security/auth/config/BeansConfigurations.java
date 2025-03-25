@@ -1,6 +1,6 @@
 package com.bookLibrary.rafapcjs.security.auth.config;
 
-import com.bookLibrary.rafapcjs.security.auth.service.CustomsDetailServices;
+import com.bookLibrary.rafapcjs.security.auth.service.login.CustomsDetailServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

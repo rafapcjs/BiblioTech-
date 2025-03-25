@@ -3,7 +3,7 @@ package com.bookLibrary.rafapcjs.user.presentation.controller.auth;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthCreateUserRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
-import com.bookLibrary.rafapcjs.security.auth.service.CustomsDetailServices;
+import com.bookLibrary.rafapcjs.security.auth.service.AuthService;
 import com.bookLibrary.rafapcjs.user.service.interfaces.IUserServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final IUserServices userServices;
-    private final CustomsDetailServices userDetailsServices;
+    private final AuthService authService;
 
     @Operation(summary = "Registrar un nuevo usuario",
             description = "Registra un nuevo usuario en el sistema. \n\n**Requiere rol ADMIN**")
@@ -33,7 +33,7 @@ public class AuthController {
     })
     @PostMapping("/sign-up")
     public ResponseEntity<AuthResponse> register (@Valid @RequestBody AuthCreateUserRequest userRequest) {
-        return new ResponseEntity<>(this.userDetailsServices.createUser(userRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.authService.register(userRequest), HttpStatus.CREATED);
     }
 
 
@@ -49,7 +49,7 @@ public class AuthController {
     })
     @PostMapping("/log-in")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest){
-        return new ResponseEntity<>(this.userDetailsServices.loginUser(userRequest), HttpStatus.OK);
+        return new ResponseEntity<>(this.authService.login(userRequest), HttpStatus.OK);
     }
 
 
