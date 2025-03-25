@@ -1,5 +1,7 @@
 package com.bookLibrary.rafapcjs.book.services.implementation;
 
+import com.bookLibrary.rafapcjs.author.persistencie.entities.Author;
+import com.bookLibrary.rafapcjs.author.persistencie.repositories.AuthorRepository;
 import com.bookLibrary.rafapcjs.book.factory.BookFactory;
 import com.bookLibrary.rafapcjs.book.persistencie.entities.Book;
 import com.bookLibrary.rafapcjs.book.persistencie.repositories.BooksRepository;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class BookServicesImpl  implements IBookServices {
  final  private ModelMapper modelMapper;
  final  private BookFactory bookFactory;
 final private CategoryRepository categoryRepository;
+    private final AuthorRepository authorRepository;
+
 
     @Override
     @Transactional
@@ -41,11 +47,17 @@ final private CategoryRepository categoryRepository;
         book.setCategory(category);
 
         // Buscar los autores por UUID y asignarlos
+        Set<Author> authors = bookPayload.getAuthorsUuids().stream()
+                .map(uuid -> authorRepository.findByUuid(uuid)
+                        .orElseThrow(() -> new ResourceNotFoundException("Author not found with UUID: " + uuid)))
+                .collect(Collectors.toSet());
+        book.setAuthors(authors);
 
-
-        // Guardar el libro
-        booksRepository.save(book);
+        // Guardar el libro y sus relaciones en la tabla intermedia
+          booksRepository.save(book);
     }
+
+
 
     @Override
     @Transactional
