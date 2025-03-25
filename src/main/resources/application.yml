@@ -4,23 +4,12 @@ server:
 spring:
   datasource:
     url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
-
-security:
-  jwt:
-    key:
-      private: ${JWT_PRIVATE_KEY}
-    user:
-      generator: auth-service
-
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create  # Opciones: create, update, validate, none
+      ddl-auto: update  # Opciones: create, update, validate, none
     show-sql: true
     properties:
       hibernate:
@@ -29,3 +18,10 @@ security:
   sql:
     init:
       mode: always  # Permite cargar scripts SQL al inicio (opcional)
+
+security:
+  jwt:
+    key:
+      private: ${JWT_PRIVATE_KEY}
+    user:
+      generator: auth-service

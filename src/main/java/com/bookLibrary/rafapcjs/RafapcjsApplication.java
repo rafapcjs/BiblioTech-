@@ -40,7 +40,17 @@ public class RafapcjsApplication {
 					.roles(Set.of(roleAdmin))
 					.build();
 
-			userRepository.saveAll(List.of(userSantiago));
+			UserEntity userNelson = UserEntity.builder()
+					.username("nelss")
+					.password("$2a$10$cMY29RPYoIHMJSuwRfoD3eQxU1J5Rww4VnNOUOAEPqCBshkNfrEf6")
+					.isEnabled(true)
+					.accountNoExpired(true)
+					.accountNoLocked(true)
+					.credentialNoExpired(true)
+					.roles(Set.of(roleUser))
+					.build();
+
+			userRepository.saveAll(List.of(userSantiago,userNelson));
 			System.out.println("Usuarios inicializados correctamente");
 
 		};
