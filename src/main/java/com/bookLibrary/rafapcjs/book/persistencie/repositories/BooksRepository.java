@@ -24,5 +24,6 @@ public interface BooksRepository  extends JpaRepository<Book,Long> {
     Optional<Book>findByUuid(UUID uuid);
     void deleteByUuid(UUID uuid);
     Page<Book> findByCreateDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
+
     Page<Book>findAll (Pageable pageable);
 }
