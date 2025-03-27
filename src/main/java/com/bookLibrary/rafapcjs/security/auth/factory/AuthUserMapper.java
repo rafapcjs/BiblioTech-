@@ -1,6 +1,6 @@
 package com.bookLibrary.rafapcjs.security.auth.factory;
 
-import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthCreateUserRequest;
+import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserRequest;
 import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

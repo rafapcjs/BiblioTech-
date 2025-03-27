@@ -1,6 +1,6 @@
 package com.bookLibrary.rafapcjs.security.auth.service.sign_in;
 
-import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthCreateUserRequest;
+import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.auth.factory.AuthUserMapper;
 import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;

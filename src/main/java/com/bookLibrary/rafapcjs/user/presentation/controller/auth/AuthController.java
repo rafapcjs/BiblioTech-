@@ -1,7 +1,7 @@
 package com.bookLibrary.rafapcjs.user.presentation.controller.auth;
 
-import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthCreateUserRequest;
-import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthLoginRequest;
+import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserRequest;
+import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.auth.service.AuthService;
 import com.bookLibrary.rafapcjs.user.service.interfaces.IUserServices;

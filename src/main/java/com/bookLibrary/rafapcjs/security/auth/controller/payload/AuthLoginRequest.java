@@ -1,9 +1,9 @@
-package com.bookLibrary.rafapcjs.security.auth.controller.dto;
+package com.bookLibrary.rafapcjs.security.auth.controller.payload;
 
 import jakarta.validation.constraints.NotBlank;
 
 public record AuthLoginRequest(
-        @NotBlank String username,
+        @NotBlank String email,
         @NotBlank String password
 ) {
 }

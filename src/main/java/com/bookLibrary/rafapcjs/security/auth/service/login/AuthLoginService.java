@@ -1,6 +1,6 @@
 package com.bookLibrary.rafapcjs.security.auth.service.login;
 
-import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthLoginRequest;
+import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class AuthLoginService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse login(AuthLoginRequest request) {
-        Authentication auth = authenticate(request.username(), request.password());
+        Authentication auth = authenticate(request.email(), request.password());
         String token = jwtTokenProvider.createToken(auth);
-        return new AuthResponse(request.username(), "Login successful", token, true);
+        return new AuthResponse(request.email(), "Login successful", token, true);
     }
 
     private Authentication authenticate(String username, String password) {

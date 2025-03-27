@@ -1,4 +1,4 @@
-package com.bookLibrary.rafapcjs.security.auth.controller.dto;
+package com.bookLibrary.rafapcjs.security.auth.controller.payload;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
