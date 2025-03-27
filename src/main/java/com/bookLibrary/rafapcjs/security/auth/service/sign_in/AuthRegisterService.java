@@ -28,19 +28,28 @@ public class AuthRegisterService {
     private final AuthUserMapper authUserMapper;
 
     public AuthResponse register(AuthCreateUserRequest request) {
+        // Obtener los roles del usuario
         Set<RoleEntity> roleEntities = roleRepository
                 .findRoleEntitiesByRoleEnumIn(request.roleRequest().roleListName())
                 .stream().collect(Collectors.toSet());
 
         if (roleEntities.isEmpty()) throw new IllegalArgumentException("Roles not found");
 
+        // Mapear y guardar el usuario
         UserEntity user = authUserMapper.toUserEntity(request, roleEntities, passwordEncoder);
-
         userRepository.save(user);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authUserMapper.mapRoles(user.getRoles()));
-        String token = jwtTokenProvider.createToken(authentication);
+        // Crear autenticación con roles
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user, null, authUserMapper.mapRoles(user.getRoles()));
 
-        return new AuthResponse(user.getUsername(), "User created successfully", token, true);
+        // Generar Access Token
+        String accessToken = jwtTokenProvider.createAccessToken(authentication);
+
+        // Generar Refresh Token
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
+
+        return new AuthResponse(user.getUsername(), "User created successfully", accessToken, refreshToken, true);
     }
 }
+

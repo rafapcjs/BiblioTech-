@@ -32,8 +32,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(http -> {
 
                     // Endpoints públicos
-                    http.requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll();
-                    http.requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/api/v1/auth/sign-up").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll();
 
 
                     // Endpoints solo para ADMIN

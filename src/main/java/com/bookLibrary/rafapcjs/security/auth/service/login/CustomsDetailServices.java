@@ -19,8 +19,8 @@ public class CustomsDetailServices implements UserDetailsService {
     private final AuthUserMapper authUserMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findUserEntityByUsername(username)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findUserEntityByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return authUserMapper.toUserDetails(userEntity);
