@@ -35,6 +35,7 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/sign-up").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll();
+                    http.requestMatchers("/swagger-ui.html").permitAll();
 
 
                     // Endpoints solo para ADMIN
