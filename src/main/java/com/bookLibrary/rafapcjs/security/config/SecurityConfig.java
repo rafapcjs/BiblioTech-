@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
@@ -35,8 +35,15 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/sign-up").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll();
-                    http.requestMatchers("/swagger-ui.html").permitAll();
 
+                    // Endpoints Swagger
+                    http.requestMatchers(
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/v3/api-docs/**",
+                            "/v3/api-docs.yaml",
+                            "/v3/api-docs.json"
+                    ).permitAll();
 
                     // Endpoints solo para ADMIN
                     http.requestMatchers("/admin/**").hasRole("ADMIN");
@@ -53,12 +60,11 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.DELETE, "/method/delete").hasAuthority("DELETE");
                     http.requestMatchers(HttpMethod.PUT, "/method/put").hasAuthority("UPDATE");
 
-                    // Cualquier otra petición es denegada
-                    http.anyRequest().denyAll();
+                    // Cualquier otra petición requiere autenticación
+                    http.anyRequest().authenticated();
                 })
 
                 .addFilterBefore(new JwtTokenValidator(jwtTokenProvider), BasicAuthenticationFilter.class)
                 .build();
     }
-
 }
