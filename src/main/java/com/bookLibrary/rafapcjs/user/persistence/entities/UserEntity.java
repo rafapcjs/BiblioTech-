@@ -2,7 +2,7 @@ package com.bookLibrary.rafapcjs.user.persistence.entities;
 
 import com.bookLibrary.rafapcjs.commons.entity.BaseEntity;
 
-import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;
+import com.bookLibrary.rafapcjs.security.auth.persistence.model.rol.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.bookLibrary.rafapcjs.security.auth.persistence.model;
+package com.bookLibrary.rafapcjs.security.auth.persistence.model.rol;
 
 import com.bookLibrary.rafapcjs.security.auth.persistence.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;

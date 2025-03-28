@@ -70,7 +70,8 @@ public class AuthController {
             RefreshResponse response = authService.refreshAccessToken(request.refreshToken());
             return ResponseEntity.ok(response);
         } catch (JWTVerificationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RefreshResponse(null, "Invalid or expired refresh token"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new RefreshResponse(null, null, "Invalid or expired refresh token"));
         }
     }
 

@@ -3,8 +3,10 @@ package com.bookLibrary.rafapcjs.security.auth.service.sign_in;
 import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.auth.factory.AuthUserMapper;
-import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;
+import com.bookLibrary.rafapcjs.security.auth.persistence.model.refreshToken.RefreshTokenEntity;
+import com.bookLibrary.rafapcjs.security.auth.persistence.model.rol.RoleEntity;
 import com.bookLibrary.rafapcjs.security.auth.persistence.repositories.RoleRepository;
+import com.bookLibrary.rafapcjs.security.auth.service.refresh_token.RefreshTokenService;
 import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import com.bookLibrary.rafapcjs.user.persistence.repositories.UserRepository;
@@ -26,6 +28,7 @@ public class AuthRegisterService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthUserMapper authUserMapper;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse register(AuthCreateUserRequest request) {
         // Obtener los roles del usuario
@@ -47,9 +50,9 @@ public class AuthRegisterService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
 
         // Generar Refresh Token
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
+        RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return new AuthResponse(user.getUsername(), "User created successfully", accessToken, refreshToken, true);
+        return new AuthResponse(user.getUsername(), "User created successfully", accessToken, refreshToken.getToken(), true);
     }
 }
 

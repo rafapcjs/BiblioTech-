@@ -1,7 +1,7 @@
 package com.bookLibrary.rafapcjs.security.auth.factory;
 
 import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserRequest;
-import com.bookLibrary.rafapcjs.security.auth.persistence.model.RoleEntity;
+import com.bookLibrary.rafapcjs.security.auth.persistence.model.rol.RoleEntity;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,20 +16,26 @@ import java.util.stream.Collectors;
 @Component
 public class AuthUserMapper {
 
+    // Metodo que mapea UserEntity a UserDetails
     public UserDetails toUserDetails(UserEntity user) {
-        return new User(user.getUsername(), user.getPassword(),
-                user.isEnabled(), user.isAccountNoExpired(),
-                user.isCredentialNoExpired(), user.isAccountNoLocked(),
+        return new User(
+                user.getEmail(),
+                user.getPassword(),
+                user.isEnabled(),
+                user.isAccountNoExpired(),
+                user.isCredentialNoExpired(),
+                user.isAccountNoLocked(),
                 mapRoles(user.getRoles()));
     }
 
+    // Mapeo de roles a SimpleGrantedAuthority para Spring Security
     public List<SimpleGrantedAuthority> mapRoles(Set<RoleEntity> roles) {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEnum().name()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleEnum().name())) // Formato "ROLE_<role>"
                 .collect(Collectors.toList());
     }
 
-    //Creacion de objeto para save user in AuthRegisterService
+    // Creación de UserEntity para registrar un nuevo usuario en AuthRegisterService
     public UserEntity toUserEntity(AuthCreateUserRequest request, Set<RoleEntity> roles, PasswordEncoder passwordEncoder) {
         return UserEntity.builder()
                 .username(request.username())
