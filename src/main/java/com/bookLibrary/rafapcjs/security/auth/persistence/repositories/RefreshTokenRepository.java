@@ -18,7 +18,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
     boolean existsByUserAndUsedFalseAndExpiryDateAfter(UserEntity user, Instant now);
 
-
     void deleteByExpiryDateBefore(Instant now);
 
     void deleteByUser(UserEntity user);

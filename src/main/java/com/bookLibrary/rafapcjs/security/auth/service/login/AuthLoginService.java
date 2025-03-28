@@ -2,6 +2,8 @@ package com.bookLibrary.rafapcjs.security.auth.service.login;
 
 import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
+import com.bookLibrary.rafapcjs.security.auth.persistence.model.refreshToken.RefreshTokenEntity;
+import com.bookLibrary.rafapcjs.security.refresh_token.RefreshTokenService;
 import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import com.bookLibrary.rafapcjs.user.persistence.repositories.UserRepository;
@@ -21,6 +23,7 @@ public class AuthLoginService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse login(AuthLoginRequest request) {
         Authentication auth = authenticate(request.email(), request.password());
@@ -34,9 +37,9 @@ public class AuthLoginService {
         String accessToken = jwtTokenProvider.createAccessToken(auth);
 
         // 🔹 Generar Refresh Token
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
+        RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return new AuthResponse(request.email(), "Login successful", accessToken, refreshToken, true);
+        return new AuthResponse(request.email(), "Login successful", accessToken, refreshToken.getToken(), true);
     }
 
     private Authentication authenticate(String username, String password) {

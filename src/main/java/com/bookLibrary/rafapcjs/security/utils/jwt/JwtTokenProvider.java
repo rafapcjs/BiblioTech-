@@ -43,20 +43,7 @@ public class JwtTokenProvider {
                 .sign(algorithm);
     }
 
-    // 🔹 Generar el Refresh Token
-    public String createRefreshToken(String username) {
-        Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
-
-        return JWT.create()
-                .withIssuer(this.userGenerator)
-                .withSubject(username)
-                .withJWTId(UUID.randomUUID().toString())
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
-                .sign(algorithm);
-    }
-
-    // 🔹 Validar cualquier token (Access o Refresh)
+    // Validar cualquier token (Access o Refresh)
     public DecodedJWT validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
@@ -69,12 +56,12 @@ public class JwtTokenProvider {
         }
     }
 
-    // 🔹 Obtener el usuario desde el token
+    // Obtener el usuario desde el token
     public String extractUsername(DecodedJWT decodedJWT) {
         return decodedJWT.getSubject();
     }
 
-    // 🔹 Obtener cualquier claim del token
+    // Obtener cualquier claim del token
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName) {
         return decodedJWT.getClaim(claimName);
     }

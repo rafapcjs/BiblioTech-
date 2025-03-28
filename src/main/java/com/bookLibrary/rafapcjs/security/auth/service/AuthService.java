@@ -5,7 +5,7 @@ import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthCreateUserR
 import com.bookLibrary.rafapcjs.security.auth.controller.payload.AuthLoginRequest;
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.AuthResponse;
 import com.bookLibrary.rafapcjs.security.auth.service.login.AuthLoginService;
-import com.bookLibrary.rafapcjs.security.auth.service.refresh_token.RefreshTokenService;
+import com.bookLibrary.rafapcjs.security.refresh_token.RefreshTokenService;
 import com.bookLibrary.rafapcjs.security.auth.service.sign_in.AuthRegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

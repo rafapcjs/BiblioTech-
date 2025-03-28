@@ -6,7 +6,7 @@ import com.bookLibrary.rafapcjs.security.auth.factory.AuthUserMapper;
 import com.bookLibrary.rafapcjs.security.auth.persistence.model.refreshToken.RefreshTokenEntity;
 import com.bookLibrary.rafapcjs.security.auth.persistence.model.rol.RoleEntity;
 import com.bookLibrary.rafapcjs.security.auth.persistence.repositories.RoleRepository;
-import com.bookLibrary.rafapcjs.security.auth.service.refresh_token.RefreshTokenService;
+import com.bookLibrary.rafapcjs.security.refresh_token.RefreshTokenService;
 import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import com.bookLibrary.rafapcjs.user.persistence.repositories.UserRepository;

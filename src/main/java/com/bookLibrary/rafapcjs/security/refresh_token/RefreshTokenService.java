@@ -1,4 +1,4 @@
-package com.bookLibrary.rafapcjs.security.auth.service.refresh_token;
+package com.bookLibrary.rafapcjs.security.refresh_token;
 
 import com.bookLibrary.rafapcjs.security.auth.controller.dto.RefreshResponse;
 import com.bookLibrary.rafapcjs.security.auth.factory.AuthUserMapper;
@@ -7,7 +7,6 @@ import com.bookLibrary.rafapcjs.security.auth.persistence.repositories.RefreshTo
 import com.bookLibrary.rafapcjs.security.utils.jwt.JwtTokenProvider;
 import com.bookLibrary.rafapcjs.user.persistence.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
