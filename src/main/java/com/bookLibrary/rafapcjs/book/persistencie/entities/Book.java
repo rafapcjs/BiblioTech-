@@ -16,21 +16,23 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "books")
-public class Book  extends BaseEntity {
+public class Book extends BaseEntity {
+
     @Column(nullable = false)
     private String title;
+
     @Column(name = "publication_date", nullable = false)
-    private LocalDate publicationDate; // ✅ Usar LocalDate para fechas sin hora}
+    private LocalDate publicationDate; // ✅ Usar LocalDate para fechas sin hora
 
-    @Column (nullable = false)
-     private String  isbn;
+    @Column(nullable = false, unique = true)
+    private String isbn;
 
- private  boolean status =true;
-
-     // Relación ManyToOne: Muchos libros pueden pertenecer a una sola categoría.
+    // Relación ManyToOne: Muchos libros pueden pertenecer a una sola categoría.
     @ManyToOne(fetch = FetchType.LAZY) // Carga diferida para optimizar rendimiento
     @JoinColumn(name = "category_id") // Clave foránea en la tabla de libros
     private Category category;
+
+    private int quantityPage;
 
     // Relación ManyToMany: Un libro puede tener varios autores y un autor puede escribir varios libros.
     @ManyToMany
@@ -41,8 +43,7 @@ public class Book  extends BaseEntity {
     )
     private Set<Author> authors; // Conjunto de autores asociados al libro
 
-
-
+    // Relación OneToMany: Un libro puede tener varias copias.
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private Set<Copies> copies; // Conjunto de copias asociadas al libro
 }
-
-
