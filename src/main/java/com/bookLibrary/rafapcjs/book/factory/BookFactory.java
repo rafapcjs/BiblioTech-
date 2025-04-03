@@ -11,7 +11,7 @@ public class BookFactory {
                  .uuid(book.getUuid())
                 .title(book.getTitle())
                 .isbn(book.getIsbn())
-                .status(book.isStatus())
+
                 .build();
     }
 }
