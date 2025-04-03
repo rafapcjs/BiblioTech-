@@ -4,6 +4,8 @@ import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
 import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +64,9 @@ public class CategoryController {
     }
 
         @DeleteMapping(value = "/{uuid}")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "409", description = "No se puede eliminar la categoría porque tiene libros asociados")
+        })
     public ResponseEntity<?> delete(@PathVariable UUID uuid) {
 
 
