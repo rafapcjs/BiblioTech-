@@ -6,6 +6,7 @@ import com.bookLibrary.rafapcjs.categories.persistencie.repositories.CategoryRep
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
 import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.ConflictException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -86,12 +87,19 @@ public class CategoryServicesImpl implements ICategoryServices {
 
     @Override
     @Transactional()
-
     public void deleteByUuid(UUID uuid) {
-        Category findByUuid = categoryRepository.findByUuid(uuid).orElseThrow( () -> new ResourceNotFoundException("categoria no encontrada con UUID: " + uuid));
-        categoryRepository.delete(findByUuid);
+        Category category = categoryRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría con UUID: " + uuid));
+
+        // Verificar si la categoría tiene libros asociados
+        if (!category.getBooks().isEmpty()) {
+            throw new ConflictException("No se puede eliminar la categoría con UUID: " + uuid + " porque tiene libros asociados.");
+        }
+
+        categoryRepository.delete(category);
 
     }
+
     @Override
     @Transactional(readOnly = true)
     public Page<CategoryDto> findAll(Pageable pageable) {

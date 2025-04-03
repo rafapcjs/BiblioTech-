@@ -1,11 +1,12 @@
 package com.bookLibrary.rafapcjs.categories.persistencie.entities;
 
+import com.bookLibrary.rafapcjs.book.persistencie.entities.Book;
 import com.bookLibrary.rafapcjs.commons.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @SuperBuilder
  @Entity
@@ -22,5 +23,7 @@ public class Category  extends BaseEntity {
     @Column(name = "description", length = 255)
     private String description;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Book> books;
 
 }

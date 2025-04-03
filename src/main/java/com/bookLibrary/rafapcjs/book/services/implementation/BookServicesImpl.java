@@ -134,6 +134,7 @@ public class BookServicesImpl  implements IBookServices {
         return null;
     }
 
+
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
