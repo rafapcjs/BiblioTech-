@@ -21,7 +21,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+
+    private final JwtTokenValidator jwtTokenValidator;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
@@ -64,7 +65,7 @@ public class SecurityConfig {
                     http.anyRequest().authenticated();
                 })
 
-                .addFilterBefore(new JwtTokenValidator(jwtTokenProvider), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenValidator, BasicAuthenticationFilter.class)
                 .build();
     }
 }
