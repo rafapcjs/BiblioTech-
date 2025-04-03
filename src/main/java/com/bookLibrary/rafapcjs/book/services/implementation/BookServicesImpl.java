@@ -87,6 +87,7 @@ book.setIsbn(bookPayload.getIsbn());
         return null;
     }
 
+
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
