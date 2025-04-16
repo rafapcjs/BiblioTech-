@@ -7,4 +7,5 @@ public record BookWithQuantityCopies(
         UUID uuid,           // UUID que corresponde al identificador único del libro
         String fullName,     // String que corresponde al nombre completo del autor
         Long quantityCopies  // Long que corresponde al número de copias
+
 ) {}

@@ -13,6 +13,7 @@ public record BookDto(
         Boolean status,
         String code,
         String categoryName
+
 ) {
 
 }

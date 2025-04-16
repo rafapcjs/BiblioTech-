@@ -4,7 +4,8 @@ import com.bookLibrary.rafapcjs.categories.factory.CategoryFactory;
 import com.bookLibrary.rafapcjs.categories.persistencie.entities.Category;
 import com.bookLibrary.rafapcjs.categories.persistencie.repositories.CategoryRepository;
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
-import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
+ import com.bookLibrary.rafapcjs.categories.presentation.payload.CreateCategoryRequest;
+import com.bookLibrary.rafapcjs.categories.presentation.payload.UpdateCategoryRequest;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ConflictException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
@@ -34,7 +35,7 @@ public class CategoryServicesImpl implements ICategoryServices {
 
     @Override
     @Transactional()
-    public void save(CategoryPayload categoryPayload) {
+    public void save(CreateCategoryRequest categoryPayload) {
 
         Category category = modelMapper.map(categoryPayload , Category.class) ;
         categoryRepository.save(category);
@@ -43,7 +44,7 @@ public class CategoryServicesImpl implements ICategoryServices {
 
     @Override
     @Transactional
-    public void update(CategoryPayload categoryPayload, UUID uuid) {
+    public void update(UpdateCategoryRequest categoryPayload, UUID uuid) {
         // 🔎 Si la categoría no existe, lanza la excepción y detiene la ejecución
         Category category = categoryRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría con UUID: " + uuid));

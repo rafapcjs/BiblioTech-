@@ -1,12 +1,12 @@
 package com.bookLibrary.rafapcjs.author.persistencie.entities;
 
+import com.bookLibrary.rafapcjs.book.persistencie.entities.Book;
 import com.bookLibrary.rafapcjs.commons.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,5 +25,8 @@ public class Author  extends BaseEntity {
 
     @Column(name = "nationality")
     private String nationality;
+
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
+    private Set<Book> books;
 
 }

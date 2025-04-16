@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class CategoryPayload {
+public class CreateCategoryRequest{
     @NotBlank(message = "Name cannot be blank")
 
     private String name;
@@ -24,8 +24,8 @@ public class CategoryPayload {
 
     private  UUID uuid;
 
-    public static CategoryPayload fromCategory(Category category) {
-        CategoryPayload payload = new CategoryPayload();
+    public static CreateCategoryRequest fromCategory(Category category) {
+        CreateCategoryRequest payload = new CreateCategoryRequest();
         payload.setName(category.getName());
         payload.setDescription(category.getDescription());
         payload.setUuid(category.getUuid());

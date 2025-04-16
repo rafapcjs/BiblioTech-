@@ -1,7 +1,8 @@
 package com.bookLibrary.rafapcjs.categories.presentation.controller;
 
 import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
-import com.bookLibrary.rafapcjs.categories.presentation.payload.CategoryPayload;
+ import com.bookLibrary.rafapcjs.categories.presentation.payload.CreateCategoryRequest;
+import com.bookLibrary.rafapcjs.categories.presentation.payload.UpdateCategoryRequest;
 import com.bookLibrary.rafapcjs.categories.service.interfaces.ICategoryServices;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +42,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping()
-    public ResponseEntity<?> create(@Valid @RequestBody CategoryPayload categoryPayload) throws URISyntaxException {
+    public ResponseEntity<?> create(@Valid @RequestBody CreateCategoryRequest categoryPayload) throws URISyntaxException {
         iCategoryServices.save(categoryPayload);
         return ResponseEntity.created(new URI("/api/v1/category/")).build();
     }
@@ -71,7 +72,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Categoría no encontrada")
     })
     @PutMapping("/update/{uuid}")
-    public ResponseEntity<?> update(@Valid @RequestBody CategoryPayload categoryPayload, @PathVariable UUID uuid) {
+    public ResponseEntity<?> update(@Valid @RequestBody UpdateCategoryRequest categoryPayload, @PathVariable UUID uuid) {
         iCategoryServices.update(categoryPayload, uuid);
         return ResponseEntity.noContent().build();
     }
