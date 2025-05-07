@@ -8,6 +8,7 @@ import com.bookLibrary.rafapcjs.author.presentation.payload.CreateAuthorRequest;
 import com.bookLibrary.rafapcjs.author.presentation.payload.UpdateAuthorRequest;
 import com.bookLibrary.rafapcjs.author.service.interfaces.IAuthorService;
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.BadRequestException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ConflictException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,16 @@ public class AuthorServiceImpl implements IAuthorService {
     @Override
     @Transactional()
     public void save(CreateAuthorRequest authorPayload) {
+
+        Optional<Author> authorIsExist = authorRepository.findByFullName(authorPayload.getFullName());
+
+        // Si el autor ya existe, lanzar una excepción
+        authorIsExist.ifPresent(existingAuthor -> {
+            throw new BadRequestException("Use otro nombre, ya existe.");
+        });
         Author author = modelMapper.map(authorPayload, Author.class);
+
+        author.setStatusEntity(StatusEntity.ACTIVE);
         authorRepository.save(author);
     }
 
