@@ -1,5 +1,6 @@
 package com.bookLibrary.rafapcjs.author.presentation.payload;
 
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import jakarta.persistence.Column;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthorPayload {
+public class UpdateAuthorRequest {
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -23,5 +24,6 @@ public class AuthorPayload {
 
     private UUID uuid;
 
+    private StatusEntity statusEntity;
 
 }

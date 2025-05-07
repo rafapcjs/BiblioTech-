@@ -4,8 +4,12 @@ import com.bookLibrary.rafapcjs.author.factory.AuthorFactory;
 import com.bookLibrary.rafapcjs.author.persistencie.entities.Author;
 import com.bookLibrary.rafapcjs.author.persistencie.repositories.AuthorRepository;
 import com.bookLibrary.rafapcjs.author.presentation.dtos.AuthorDto;
-import com.bookLibrary.rafapcjs.author.presentation.payload.AuthorPayload;
+import com.bookLibrary.rafapcjs.author.presentation.payload.CreateAuthorRequest;
+import com.bookLibrary.rafapcjs.author.presentation.payload.UpdateAuthorRequest;
 import com.bookLibrary.rafapcjs.author.service.interfaces.IAuthorService;
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.BadRequestException;
+import com.bookLibrary.rafapcjs.commons.exception.exceptions.ConflictException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
@@ -25,18 +30,40 @@ public class AuthorServiceImpl implements IAuthorService {
 
     @Override
     @Transactional()
-    public void save(AuthorPayload authorPayload) {
+    public void save(CreateAuthorRequest authorPayload) {
+
+        Optional<Author> authorIsExist = authorRepository.findByFullName(authorPayload.getFullName());
+
+        // Si el autor ya existe, lanzar una excepción
+        authorIsExist.ifPresent(existingAuthor -> {
+            throw new BadRequestException("Use otro nombre, ya existe.");
+        });
         Author author = modelMapper.map(authorPayload, Author.class);
+
+        author.setStatusEntity(StatusEntity.ACTIVE);
         authorRepository.save(author);
     }
 
     @Override
-    @Transactional()
-    public void update(AuthorPayload authorPayload, UUID uuid) {
-        Author author= authorRepository.findByUuid(uuid)
-                .orElseThrow(()-> new ResourceNotFoundException("No existe el autor con UUID: " + uuid + "registrado en la base de datos"));
+    @Transactional
+    public void update(UpdateAuthorRequest authorPayload, UUID uuid) {
+        Author author = authorRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el autor con UUID: " + uuid + " registrado en la base de datos"));
 
+        // Si el autor no tiene libros asociados, se actualiza el estado
+        if (author.getBooks().isEmpty() && authorPayload.getStatusEntity() != null) {
+            author.setStatusEntity(authorPayload.getStatusEntity());
+        }
+
+        // Actualizar otros campos del autor según el AuthorPayload
+        author.setFullName(authorPayload.getFullName());
+        author.setBirthDate(authorPayload.getBirthDate());
+        author.setNationality(authorPayload.getNationality());
+
+        // Guardar los cambios del autor
+        authorRepository.save(author);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -59,13 +86,21 @@ public class AuthorServiceImpl implements IAuthorService {
     public void deleteByUuid(UUID uuid) {
       Author author = authorRepository.findByUuid(uuid)
                 .orElseThrow(()-> new ResourceNotFoundException("No existe el autor con UUID: " + uuid + "registrado en la base de datos"));
-        authorRepository.delete(author);
+
+if(author.getBooks()!=null&&author.getBooks().isEmpty()){
+
+throw  new ConflictException("Nose puede eliminar el autor con UUID por que esta relacionad con libros: " + uuid);
+
+
+}
+author.setStatusEntity(StatusEntity.DELETE);
+authorRepository.save(author);
+
     }
 
-    @Override
     @Transactional(readOnly = true)
-    public Page<AuthorDto> findAll(Pageable pageable) {
-        return authorRepository.findAll(pageable)
+    public Page<AuthorDto> findAllByStatusEntity(StatusEntity statusEntity, Pageable pageable) {
+        return authorRepository.findAllByStatusEntity(statusEntity, pageable)
                 .map(authorFactory::createAuthorDto);
     }
 }

@@ -10,10 +10,12 @@ import com.bookLibrary.rafapcjs.book.persistencie.repositories.ICopiesRepository
 import com.bookLibrary.rafapcjs.book.presentation.dto.BookDto;
 import com.bookLibrary.rafapcjs.book.presentation.dto.BookDtoDetails;
 import com.bookLibrary.rafapcjs.book.presentation.dto.BookWithQuantityCopies;
-import com.bookLibrary.rafapcjs.book.presentation.payload.BookPayload;
+ import com.bookLibrary.rafapcjs.book.presentation.payload.CreateBookRequest;
+import com.bookLibrary.rafapcjs.book.presentation.payload.UpdateBookRequest;
 import com.bookLibrary.rafapcjs.book.services.interfaces.IBookServices;
 import com.bookLibrary.rafapcjs.categories.persistencie.entities.Category;
 import com.bookLibrary.rafapcjs.categories.persistencie.repositories.CategoryRepository;
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ConflictException;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,16 +36,16 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class BookServicesImpl  implements IBookServices {
-    final  private ModelMapper modelMapper;
-    final  private BookFactory bookFactory;
-    final  private IBooksRepository booksRepository;
-   final private CategoryRepository categoryRepository;
-     final private  AuthorRepository authorRepository;
-    final  private ICopiesRepository iCopiesRepository;
+    final private ModelMapper modelMapper;
+    final private BookFactory bookFactory;
+    final private IBooksRepository booksRepository;
+    final private CategoryRepository categoryRepository;
+    final private AuthorRepository authorRepository;
+    final private ICopiesRepository iCopiesRepository;
 
     @Override
     @Transactional
-    public void save(BookPayload bookPayload) {
+    public void save(CreateBookRequest bookPayload) {
         // Convertir BookPayload a Book
         Book book = modelMapper.map(bookPayload, Book.class);
 
@@ -60,26 +62,25 @@ public class BookServicesImpl  implements IBookServices {
         book.setAuthors(authors);
 
         // Guardar el libro y sus relaciones en la tabla intermedia
-          booksRepository.save(book);
+        booksRepository.save(book);
 
-          int cantidadDeCopias = Math.max(bookPayload.getCantidadDeCopies(),0);
+        int cantidadDeCopias = Math.max(bookPayload.getCantidadDeCopies(), 0);
 
-          if (cantidadDeCopias>0){
-              Set<Copies>copies= IntStream.range(0,cantidadDeCopias)
-                      .mapToObj(i->Copies.builder()
-                              .book(book)
-                              .status(true)
-                              .build())
-                      .collect(Collectors.toSet());
-              iCopiesRepository.saveAll(copies);
-          }
+        if (cantidadDeCopias > 0) {
+            Set<Copies> copies = IntStream.range(0, cantidadDeCopias)
+                    .mapToObj(i -> Copies.builder()
+                            .book(book)
+                            .status(true)
+                            .build())
+                    .collect(Collectors.toSet());
+            iCopiesRepository.saveAll(copies);
+        }
     }
-
 
 
     @Override
     @Transactional
-    public void update(BookPayload bookPayload, UUID uuid) {
+    public void update(UpdateBookRequest bookPayload, UUID uuid) {
         // Buscar el libro por UUID
         Book book = booksRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found: " + uuid));
@@ -102,9 +103,6 @@ public class BookServicesImpl  implements IBookServices {
                 .collect(Collectors.toSet());
         book.setAuthors(authors);
 
-        // Guardar cambios del libro
-        booksRepository.save(book);
-
         // Manejo de copias: Ajustar la cantidad según el nuevo `BookPayload`
         int nuevaCantidadDeCopias = Math.max(bookPayload.getCantidadDeCopies(), 0);
         List<Copies> copiasActuales = iCopiesRepository.findByBook(book);
@@ -124,8 +122,21 @@ public class BookServicesImpl  implements IBookServices {
             List<Copies> copiasPorEliminar = copiasActuales.subList(nuevaCantidadDeCopias, copiasActuales.size());
             iCopiesRepository.deleteAll(copiasPorEliminar);
         }
-    }
 
+        // Comprobar si el libro tiene copias
+        if (!book.getCopies().isEmpty()) {
+            // Si tiene copias, no se puede cambiar el estado a "INACTIVE"
+            if (book.getStatusEntity() != StatusEntity.ACTIVE) {
+                book.setStatusEntity(StatusEntity.ACTIVE); // Aseguramos que el libro permanezca activo
+            }
+        } else {
+            // Si no tiene copias, actualizamos el estado a "INACTIVE"
+            book.setStatusEntity(StatusEntity.DELETE);
+        }
+
+        // Guardar los cambios del libro
+        booksRepository.save(book);
+    }
 
 
     @Override
@@ -134,48 +145,46 @@ public class BookServicesImpl  implements IBookServices {
         return null;
     }
 
+
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
+        Book book = booksRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with UUID: " + uuid));
 
-        Book books = booksRepository.findByUuid(uuid).orElseThrow(()->new ResourceNotFoundException( "Book not found   " + uuid ));
-       // verufca si los libro tiene ejemplares
-       if (!books.getCopies().isEmpty()){
+        // Verificar si el libro tiene copias asociadas
+        if (book.getCopies() != null && !book.getCopies().isEmpty()) {
+            throw new ConflictException("Cannot delete book because it has associated copies.");
+        }
 
-           throw new ConflictException("Book already has copies " + books.getCopies());
-       }
-        booksRepository.delete(books);
+        // Eliminación lógica: marcar como INACTIVE
+        book.setStatusEntity(StatusEntity.DELETE);
+        booksRepository.save(book);
     }
 
+
     @Override
+    @Transactional(readOnly = true)
+
     public BookDto findByUuid(UUID uuid) {
         return null;
     }
 
 
-    @Override
-    @Transactional
-    public Page<BookDto> findByCreateDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return null;
-    }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<BookDto> findAll(Pageable pageable) {
-        return null;
-    }
 
-    @Override
     public Page<BookWithQuantityCopies> findAllWithQuantityCopies(Pageable pageable) {
-        return booksRepository.findAllWithQuantityCopies(pageable).map( book -> modelMapper.map(book, BookWithQuantityCopies.class));
+        return booksRepository.findAllWithQuantityCopies(pageable).map(book -> modelMapper.map(book, BookWithQuantityCopies.class));
     }
 
     @Override
     @Transactional(readOnly = true)
 
-    public Page<BookDtoDetails> findAllBooks(Pageable pageable) {
-        return booksRepository.findAllBooks(pageable)
-                .map(book-> modelMapper.map(book, BookDtoDetails.class));
+    public Page<BookDtoDetails> findAllBooks(Pageable pageable, StatusEntity statusEntity) {
+        return booksRepository.findAllBooks(statusEntity, pageable)
+                .map(book -> modelMapper.map(book, BookDtoDetails.class));
     }
 
     @Override
@@ -183,30 +192,30 @@ public class BookServicesImpl  implements IBookServices {
         return booksRepository.findBooksByTitle(titlePattern, pageable)
                 .map(book -> modelMapper.map(book, BookDtoDetails.class));
     }
-
     @Override
     @Transactional(readOnly = true)
     public BookDtoDetails findByUuidWithDetails(UUID uuid) {
+        Book book = booksRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado con UUID: " + uuid));
 
-            Book book = booksRepository.findByUuid(uuid)
-                    .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado con UUID: " + uuid));
+        // Crear BookDtoDetails incluyendo el statusEntity
+        return new BookDtoDetails(
+                book.getUuid().toString(),
+                book.getIsbn(),
+                book.getQuantityPage(),
+                book.getTitle(),
+                book.getCategory().getName(),
+                book.getCategory().getDescription(),
+                book.getCategory().getUuid().toString(),
+                (long) book.getCopies().size(),  // Contar ejemplares
+                book.getAuthors().stream()
+                        .map(author -> author.getUuid().toString())
+                        .collect(Collectors.joining(",")),
+                book.getAuthors().stream()
+                        .map(Author::getFullName)
+                        .collect(Collectors.joining(",")),
+                book.getStatusEntity() // Agregar el statusEntity aquí
+        );
+    }
 
-            return new BookDtoDetails(
-                    book.getUuid().toString(),
-                    book.getIsbn(),
-                    book.getQuantityPage(),
-                    book.getTitle(),
-                    book.getCategory().getName(),
-                    book.getCategory().getDescription(),
-                    book.getCategory().getUuid().toString(),
-                    (long) book.getCopies().size(),  // Contar ejemplares
-                    book.getAuthors().stream()
-                            .map(author -> author.getUuid().toString())
-                            .collect(Collectors.joining(",")),
-                    book.getAuthors().stream()
-                            .map(Author::getFullName)
-                            .collect(Collectors.joining(","))
-            );
-        }
-
-    }  
+}

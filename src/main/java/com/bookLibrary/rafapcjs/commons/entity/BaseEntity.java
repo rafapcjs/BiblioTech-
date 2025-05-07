@@ -1,5 +1,6 @@
 package com.bookLibrary.rafapcjs.commons.entity;
 
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
@@ -37,10 +39,15 @@ public  abstract  class BaseEntity {
     @Column(nullable = false, updatable = false, name = "create_date")
     private Date createDate;
 
-
     @Temporal(TemporalType.TIMESTAMP)
+    @LastModifiedDate
     @Column(name = "update_date")
     private Date updateDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_entity")
+    private StatusEntity statusEntity;
+
 
     @PrePersist
     protected void prePersist() {

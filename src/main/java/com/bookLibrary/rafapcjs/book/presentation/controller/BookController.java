@@ -1,11 +1,9 @@
 package com.bookLibrary.rafapcjs.book.presentation.controller;
-
-import com.bookLibrary.rafapcjs.book.presentation.dto.BookDto;
-import com.bookLibrary.rafapcjs.book.presentation.dto.BookDtoDetails;
-import com.bookLibrary.rafapcjs.book.presentation.dto.BookWithQuantityCopies;
-import com.bookLibrary.rafapcjs.book.presentation.payload.BookPayload;
-import com.bookLibrary.rafapcjs.book.services.implementation.BookServicesImpl;
-import com.bookLibrary.rafapcjs.book.services.interfaces.IBookServices;
+ import com.bookLibrary.rafapcjs.book.presentation.dto.BookDtoDetails;
+import com.bookLibrary.rafapcjs.book.presentation.payload.CreateBookRequest;
+import com.bookLibrary.rafapcjs.book.presentation.payload.UpdateBookRequest;
+ import com.bookLibrary.rafapcjs.book.services.interfaces.IBookServices;
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -37,7 +34,7 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody BookPayload bookPayload) throws URISyntaxException {
+    public ResponseEntity<?> create(@Valid @RequestBody CreateBookRequest bookPayload) throws URISyntaxException {
         iBookServices.save(bookPayload);
         return ResponseEntity.created(new URI("/api/v1/book/" )).build();
     }
@@ -62,7 +59,7 @@ public class BookController {
             @ApiResponse(responseCode = "404", description = "Libro no encontrado")
     })
     @PutMapping("/update/{uuid}")
-    public ResponseEntity<?> update(@Valid @RequestBody BookPayload bookPayload, @PathVariable UUID uuid) {
+    public ResponseEntity<?> update(@Valid @RequestBody UpdateBookRequest bookPayload, @PathVariable UUID uuid) {
         iBookServices.update(bookPayload, uuid);
         return ResponseEntity.noContent().build();
     }
@@ -81,34 +78,23 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Obtener todos los libros paginados",
-            description = "Devuelve una lista paginada de libros con detalles adicionales.")
+
+
+
+
     @GetMapping
+    @Operation(summary = "Listar libros", description = "Obtiene una lista paginada de libros según su estado")
     public ResponseEntity<?> getAll(
             @Parameter(description = "Número de página") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Tamaño de la página") @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "Campo para ordenar") @RequestParam(defaultValue = "title") String sortBy,
-            @Parameter(description = "Dirección de ordenamiento") @RequestParam(defaultValue = "asc") String direction) {
+            @Parameter(description = "Dirección de ordenamiento") @RequestParam(defaultValue = "asc") String direction,
+            @Parameter(description = "Estado del libro") @RequestParam(defaultValue = "ACTIVE") StatusEntity statusEntity) {
 
         Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-        Page<BookDtoDetails> books = iBookServices.findAllBooks(pageable);
+        Page<BookDtoDetails> books = iBookServices.findAllBooks(pageable,statusEntity);
         return ResponseEntity.ok(books);
     }
-
-    @Operation(summary = "Obtener todos los libros con cantidad de copias",
-            description = "Lista los libros junto con la cantidad de copias disponibles en el sistema.")
-    @GetMapping("/quantityCopies")
-    public ResponseEntity<?> getAllQuantityCopies(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "title") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
-
-        Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-        Page<BookWithQuantityCopies> books = iBookServices.findAllWithQuantityCopies(pageable);
-        return ResponseEntity.ok(books);
-    }
-
 
     @Operation(
             summary = "Buscar libros por título",

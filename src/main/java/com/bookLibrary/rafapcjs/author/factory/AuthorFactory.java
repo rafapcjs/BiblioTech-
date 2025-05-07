@@ -12,6 +12,7 @@ public class AuthorFactory {
                 .birthDate(author.getBirthDate())
                 .nationality(author.getNationality())
                 .uuid(author.getUuid())
+                .statusEntity(author.getStatusEntity())
                 .build();
     }
 }

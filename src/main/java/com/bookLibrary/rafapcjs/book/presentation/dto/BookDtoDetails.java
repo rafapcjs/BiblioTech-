@@ -1,7 +1,8 @@
 package com.bookLibrary.rafapcjs.book.presentation.dto;
 
-import java.util.List;
-public record BookDtoDetails(
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
+
+ public record BookDtoDetails(
         String bookUuid,
         String isbn,
         int quantityPage,
@@ -11,6 +12,8 @@ public record BookDtoDetails(
         String uuidCategoria,
         Long cantidadEjemplares,
         String authorUuids,
-        String authorFullnames // Nueva propiedad para los nombres completos de los autores
+        String authorFullnames
+        , StatusEntity statusEntity
+// Nueva propiedad para los nombres completos de los autores
 ) {
 }

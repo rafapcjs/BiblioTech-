@@ -1,5 +1,6 @@
 package com.bookLibrary.rafapcjs.book.presentation.payload;
 
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -9,12 +10,13 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
+
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookPayload {
+public class UpdateBookRequest {
 
     private UUID uuid; // Solo se usa para actualizaciones, no en creación
 
@@ -38,4 +40,5 @@ public class BookPayload {
     private int cantidadDeCopies = 0; // Valor por defecto
     @NotEmpty(message = "Debe haber al menos un autor")
     private Set<UUID> authorsUuids; // UUIDs de los autores, usados en la tabla intermedia
+    private StatusEntity statusEntity;
 }
