@@ -171,7 +171,6 @@ public class BookServicesImpl  implements IBookServices {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
 
@@ -180,18 +179,17 @@ public class BookServicesImpl  implements IBookServices {
     }
 
     @Override
-    @Transactional(readOnly = true)
-
-    public Page<BookDtoDetails> findAllBooks(Pageable pageable, StatusEntity statusEntity) {
-        return booksRepository.findAllBooks(statusEntity, pageable)
-                .map(book -> modelMapper.map(book, BookDtoDetails.class));
+    public Page<BookDtoDetails> findAllBooks(Pageable pageable, String statusEntity) {
+        return booksRepository.findAllBooksWithDetailsByStatus(statusEntity, pageable);
     }
+
 
     @Override
     public Page<BookDtoDetails> findBooksByTitle(String titlePattern, Pageable pageable) {
         return booksRepository.findBooksByTitle(titlePattern, pageable)
                 .map(book -> modelMapper.map(book, BookDtoDetails.class));
     }
+
     @Override
     @Transactional(readOnly = true)
     public BookDtoDetails findByUuidWithDetails(UUID uuid) {
@@ -213,8 +211,9 @@ public class BookServicesImpl  implements IBookServices {
                         .collect(Collectors.joining(",")),
                 book.getAuthors().stream()
                         .map(Author::getFullName)
-                        .collect(Collectors.joining(",")),
-                book.getStatusEntity() // Agregar el statusEntity aquí
+                        .collect(Collectors.joining(","))
+                , book.getStatusEntity().name()
+                //  book.getStatusEntity() // Agregar el statusEntity aquí
         );
     }
 

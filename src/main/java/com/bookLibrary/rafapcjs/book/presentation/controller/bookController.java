@@ -6,13 +6,13 @@ import com.bookLibrary.rafapcjs.book.presentation.payload.UpdateBookRequest;
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+ import org.springframework.data.domain.PageRequest;
+ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/book")
 @RequiredArgsConstructor
-public class BookController {
+public class bookController {
 
     private final IBookServices iBookServices;
 
@@ -82,19 +82,19 @@ public class BookController {
 
 
 
-    @GetMapping
-    @Operation(summary = "Listar libros", description = "Obtiene una lista paginada de libros según su estado")
-    public ResponseEntity<?> getAll(
-            @Parameter(description = "Número de página") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Tamaño de la página") @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "Campo para ordenar") @RequestParam(defaultValue = "title") String sortBy,
-            @Parameter(description = "Dirección de ordenamiento") @RequestParam(defaultValue = "asc") String direction,
-            @Parameter(description = "Estado del libro") @RequestParam(defaultValue = "ACTIVE") StatusEntity statusEntity) {
 
-        Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-        Page<BookDtoDetails> books = iBookServices.findAllBooks(pageable,statusEntity);
+    @GetMapping()
+    @Operation(summary = "Listar libros", description = "Obtiene una lista paginada de libros según su estado")
+    public ResponseEntity<Page<BookDtoDetails>> getBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "ACTIVE") String statusEntity) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BookDtoDetails> books = iBookServices.findAllBooks(pageable, statusEntity);
         return ResponseEntity.ok(books);
     }
+
 
     @Operation(
             summary = "Buscar libros por título",
@@ -106,7 +106,7 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/search/{title}")
-    public ResponseEntity<Page<BookDtoDetails>> searchBooksByTitle(
+    public ResponseEntity<Page<BookDtoDetails>> searchBooksByTitles(
             @PathVariable String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

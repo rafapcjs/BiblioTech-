@@ -20,7 +20,7 @@ public interface IBookServices {
  BookDto  findByUuid(UUID uuid);
 
   Page<BookWithQuantityCopies> findAllWithQuantityCopies(Pageable pageable);
- Page<BookDtoDetails> findAllBooks(Pageable pageable , StatusEntity statusEntity);
+ Page<BookDtoDetails> findAllBooks(Pageable pageable , String statusEntity);
  Page<BookDtoDetails> findBooksByTitle(String titlePattern, Pageable pageable);
    BookDtoDetails findByUuidWithDetails(UUID uuid) ;
 

@@ -1,19 +1,29 @@
 package com.bookLibrary.rafapcjs.book.presentation.dto;
 
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
- public record BookDtoDetails(
-        String bookUuid,
-        String isbn,
-        int quantityPage,
-        String title,
-        String nameCategoria,
-        String descriptionCategoria,
-        String uuidCategoria,
-        Long cantidadEjemplares,
-        String authorUuids,
-        String authorFullnames
-        , StatusEntity statusEntity
-// Nueva propiedad para los nombres completos de los autores
-) {
+import java.util.UUID;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookDtoDetails {
+
+ private String bookUuid;
+ private String isbn;
+ private int quantityPage;
+ private String title;
+ private String nameCategoria;
+ private String descriptionCategoria;
+ private String uuidCategoria;
+ private long cantidadEjemplares;
+ private String authorUuids;
+ private String authorFullnames;
+ private String statusEntity;
+
 }
