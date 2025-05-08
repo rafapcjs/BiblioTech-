@@ -1,5 +1,6 @@
 package com.bookLibrary.rafapcjs.users.persistencie.repositories;
 
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.users.persistencie.entities.User;
 import com.bookLibrary.rafapcjs.users.presentation.dto.UserDto;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional <User> findByDni(String dni);
     boolean existsByEmail(String email);
     boolean existsByDni(String dni);
-    Page<User>findAll(Pageable pageable);
+    Page<User> findByStatusEntity(StatusEntity statusEntity, Pageable pageable);
 
 }

@@ -1,5 +1,6 @@
 package com.bookLibrary.rafapcjs.users.presentation.controller;
 
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
 import com.bookLibrary.rafapcjs.users.presentation.dto.UserDto;
 import com.bookLibrary.rafapcjs.users.presentation.payload.UserCreateRequest;
@@ -150,11 +151,20 @@ public class UserController {
             @Parameter(description = "Número de la página") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Tamaño de la página") @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "Campo para ordenar") @RequestParam(defaultValue = "email") String sortBy,
-            @Parameter(description = "Dirección del ordenamiento") @RequestParam(defaultValue = "asc") String direction) {
+            @Parameter(description = "Dirección del ordenamiento") @RequestParam(defaultValue = "asc") String direction,
+            @Parameter(description = "Estado de los usuarios: 'ACTIVE' o 'ARCHIVED'") @RequestParam(defaultValue = "ACTIVE") String status) {  // Añadido el parámetro de estado
 
+        // Convertir el String 'status' a StatusEntity (enum)
+        StatusEntity statusEntity = StatusEntity.valueOf(status.toUpperCase()); // Convertir String a enum StatusEntity
+
+        // Creación del Pageable con la paginación y ordenamiento
         Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-        Page<UserDto> categories = iUserServices.findAll(pageable);
-        return ResponseEntity.ok(categories);
+
+        // Llamar al servicio para obtener los usuarios filtrados por estado
+        Page<UserDto> users = iUserServices.findByStatusEntity(statusEntity, pageable); // Pasar el StatusEntity al servicio
+
+        return ResponseEntity.ok(users);
     }
+
 
 }

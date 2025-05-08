@@ -60,9 +60,14 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserDto> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(x -> modelMapper.map(x, UserDto.class));
+    public Page<UserDto> findByStatusEntity(StatusEntity statusEntity, Pageable pageable) {
+        // Filtrar usuarios por el estado y devolver la página con los resultados
+        Page<User> users = userRepository.findByStatusEntity(statusEntity, pageable);
+
+        // Mapear los resultados a UserDto y devolver la página
+        return users.map(user -> modelMapper.map(user, UserDto.class));
     }
+
 
     @Override
     @Transactional(readOnly = true)
