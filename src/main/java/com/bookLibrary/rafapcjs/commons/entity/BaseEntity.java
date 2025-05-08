@@ -46,7 +46,7 @@ public  abstract  class BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_entity")
-    private StatusEntity statusEntity;
+    private StatusEntity statusEntity=StatusEntity.ACTIVE;
 
 
     @PrePersist
