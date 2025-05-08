@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,39 +64,29 @@ public interface IBooksRepository  extends JpaRepository<Book,Long> {
             "GROUP BY b.id, b.title, a.fullName")
     Page<BookWithQuantityCopies> findAllWithQuantityCopies(Pageable pageable);
 
-    @Query(value = """
-        SELECT 
-            b.uuid AS bookUuid, 
-            b.isbn, 
-            b.quantity_page AS quantityPage, 
-            b.title, 
-            c.name AS nameCategoria, 
-            c.description AS descriptionCategoria, 
-            c.uuid AS uuidCategoria,     
-            COUNT(DISTINCT cp.uuid) AS cantidadEjemplares,
-            STRING_AGG(DISTINCT a.uuid::TEXT, ',') AS authorUuids,
-            STRING_AGG(DISTINCT a.full_name, ', ') AS authorFullnames,
-            b.status_entity AS statusEntity
-        FROM books b
-        JOIN categories c ON b.category_id = c.id
-        LEFT JOIN libros_autores la ON b.id = la.libro_id
-        LEFT JOIN copies cp ON cp.book_id = b.id
-        LEFT JOIN authors a ON la.author_id = a.id
-        WHERE b.status_entity = :statusEntity
-        GROUP BY 
-            b.uuid, b.isbn, b.quantity_page, b.title, 
-            c.name, c.description, c.uuid, b.status_entity
-        ORDER BY b.title ASC
-        """,
-            countQuery = "SELECT COUNT(*) FROM books WHERE status_entity = :statusEntity",
-            nativeQuery = true)
-    Page<BookDtoDetails> findAllBooks(@Param("statusEntity") StatusEntity statusEntity, Pageable pageable);
-
-
-
-
-
-
+    @Query(value = "SELECT " +
+            "b.uuid AS bookUuid, " +
+            "b.isbn, " +
+            "b.quantity_page AS quantityPage, " +
+            "b.title, " +
+            "c.name AS nameCategoria, " +
+            "c.description AS descriptionCategoria, " +
+            "c.uuid AS uuidCategoria, " +
+            "COUNT(DISTINCT cp.uuid) AS cantidadEjemplares, " +
+            "STRING_AGG(DISTINCT a.uuid::TEXT, ',') AS authorUuids, " +
+            "STRING_AGG(DISTINCT a.full_name, ', ') AS authorFullnames, " +
+            "b.status_entity AS statusEntity " +
+            "FROM books b " +
+            "JOIN categories c ON b.category_id = c.id " +
+            "LEFT JOIN libros_autores la ON b.id = la.libro_id " +
+            "LEFT JOIN copies cp ON cp.book_id = b.id " +
+            "LEFT JOIN authors a ON la.author_id = a.id " +
+            "WHERE b.status_entity = :statusEntity " +
+            "GROUP BY " +
+            "b.uuid, b.isbn, b.quantity_page, b.title, " +
+            "c.name, c.description, c.uuid, b.status_entity " +
+            "ORDER BY b.title ASC", nativeQuery = true)
+    Page<BookDtoDetails> findAllBooksWithDetailsByStatus(@Param("statusEntity") String statusEntity, Pageable pageable);
     @Query(value = """
     SELECT 
         b.uuid AS bookUuid, 
