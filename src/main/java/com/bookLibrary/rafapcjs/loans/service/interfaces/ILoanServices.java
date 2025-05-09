@@ -18,5 +18,6 @@ public interface ILoanServices {
 void deliverLoan(UUID loanId);
     Page<LoanDto> listLoansByStatus(StatusEntity status, Pageable pageable);
     void updateLoanTerms(UUID loanId, UpdateLoanRequest updateLoanRequest);
+    int markOverdueAsDefeated();
 
 }

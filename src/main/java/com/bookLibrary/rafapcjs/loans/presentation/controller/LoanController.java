@@ -145,13 +145,32 @@ public class LoanController {
     }
 
 
-    /** Actualiza fechas de inicio y vencimiento de un préstamo activo */
+    /**
+     * Actualiza las fechas de inicio y vencimiento de un préstamo activo
+     */
+    @Operation(
+            summary = "Actualizar fechas de un préstamo",
+            description = "Permite modificar la fecha de inicio y la fecha prevista de devolución de un préstamo que esté en estado ACTIVE"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Fechas actualizadas correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Préstamo no encontrado", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    })
     @PutMapping("/{loanId}")
     public ResponseEntity<Void> updateLoanTerms(
+            @Parameter(in = ParameterIn.PATH, description = "UUID del préstamo a actualizar", required = true)
             @PathVariable UUID loanId,
+            @Parameter(
+                    description = "Payload con las nuevas fechas de inicio y vencimiento",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UpdateLoanRequest.class))
+            )
             @Valid @RequestBody UpdateLoanRequest request
     ) {
-       // iLoanServices.updateLoanTerms(loanId, request.s(), request.dueDate());
+        iLoanServices.updateLoanTerms(loanId, request);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -6,8 +6,11 @@ import com.bookLibrary.rafapcjs.loans.presentation.dto.LoanDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +27,17 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     Page<Loan> findByStatusEntity(StatusEntity status, Pageable pageable);
 Optional<Loan>findByUuid(UUID loanId);
     Page<Loan> findByUserDni(String dni ,Pageable pageable);
-
-
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("""
+        UPDATE Loan l
+        SET l.statusEntity = :overdue
+        WHERE l.statusEntity = :active
+          AND l.dueDate < :today
+    """)
+    int markOverdueAsDefeated(
+            @Param("active")  StatusEntity active,
+            @Param("overdue") StatusEntity overdue,
+            @Param("today")   LocalDate today
+    );
 }
