@@ -43,11 +43,15 @@ public class BookServicesImpl  implements IBookServices {
     final private AuthorRepository authorRepository;
     final private ICopiesRepository iCopiesRepository;
 
+
     @Override
     @Transactional
     public void save(CreateBookRequest bookPayload) {
         // Convertir BookPayload a Book
         Book book = modelMapper.map(bookPayload, Book.class);
+
+        // Asignar un nuevo UUID único al libro
+        book.setUuid(UUID.randomUUID());
 
         // Buscar la categoría por UUID y asignarla
         Category category = categoryRepository.findByUuid(bookPayload.getCategoryUuid())
