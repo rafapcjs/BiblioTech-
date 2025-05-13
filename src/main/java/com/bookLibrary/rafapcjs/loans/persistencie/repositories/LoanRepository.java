@@ -3,6 +3,7 @@ package com.bookLibrary.rafapcjs.loans.persistencie.repositories;
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.loans.persistencie.entities.Loan;
 import com.bookLibrary.rafapcjs.loans.presentation.dto.LoanDto;
+import com.bookLibrary.rafapcjs.users.persistencie.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +27,23 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     long countLoans();      // ← nuevo método
     Page<Loan> findByStatusEntity(StatusEntity status, Pageable pageable);
 Optional<Loan>findByUuid(UUID loanId);
-
+    @Query("""
+        SELECT COUNT(l) > 0
+          FROM Loan l
+         WHERE l.user          = :user
+           AND l.statusEntity  = :loanStatus
+           AND EXISTS (
+               SELECT 1
+                 FROM Fine f
+                WHERE f.loan        = l
+                  AND f.statusEntity <> :paidStatus
+           )
+    """)
+    boolean existsByUserAndStatusEntityAndNotPaidFine(
+            @Param("user") User user,
+            @Param("loanStatus") StatusEntity loanStatus,
+            @Param("paidStatus") StatusEntity paidStatus
+    );
     Page<Loan> findByUserDni(String dni ,Pageable pageable);
     @Modifying(clearAutomatically = true)
     @Transactional
