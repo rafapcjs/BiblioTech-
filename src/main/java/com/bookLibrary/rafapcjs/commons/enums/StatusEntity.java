@@ -6,6 +6,7 @@ public enum StatusEntity {
     DELETE,
     ARCHIVED,
     DEFEATED,
-    PENDING
+    PENDING,
+    PAID
 
 }

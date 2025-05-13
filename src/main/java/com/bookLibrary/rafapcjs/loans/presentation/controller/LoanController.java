@@ -2,10 +2,12 @@ package com.bookLibrary.rafapcjs.loans.presentation.controller;
 
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.utils.pageable.PageableUtil;
+import com.bookLibrary.rafapcjs.fines.presentation.dto.FineDto;
 import com.bookLibrary.rafapcjs.loans.presentation.dto.LoanDto;
 import com.bookLibrary.rafapcjs.loans.presentation.payload.CreateLoanRequest;
 import com.bookLibrary.rafapcjs.loans.presentation.payload.UpdateLoanRequest;
 import com.bookLibrary.rafapcjs.loans.service.interfaces.ILoanServices;
+import com.bookLibrary.rafapcjs.users.presentation.dto.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,32 +68,8 @@ public class LoanController {
         return ResponseEntity.created(new URI("/api/v1/loan")).build();
     }
 
-    @Operation(summary = "Listar todos los préstamos",
-            description = "Obtiene una página de préstamos filtrados por estado, ordenados y paginados según parámetros")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de préstamos",
-                    content = @Content(schema = @Schema(implementation = LoanDto.class))),
-            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
-    })
-    @GetMapping
-    public ResponseEntity<Page<LoanDto>> getAll(
-            @Parameter(in = ParameterIn.QUERY, description = "Número de página (0-index)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-            @Parameter(in = ParameterIn.QUERY, description = "Tamaño de página", example = "10")
-            @RequestParam(defaultValue = "10") int size,
-            @Parameter(in = ParameterIn.QUERY, description = "Campo por el que ordenar", example = "startDate")
-            @RequestParam(defaultValue = "startDate") String sortBy,
-            @Parameter(in = ParameterIn.QUERY, description = "Dirección de ordenación: asc o desc", example = "asc")
-            @RequestParam(defaultValue = "asc") String direction,
-            @Parameter(in = ParameterIn.QUERY, description = "Estado de los préstamos: ACTIVE, ARCHIVED...", example = "ACTIVE")
-            @RequestParam(defaultValue = "ACTIVE") String status
-    ) {
-        StatusEntity statusEntity = StatusEntity.valueOf(status.toUpperCase());
-        Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
-        Page<LoanDto> loans = iLoanServices.listLoansByStatus(statusEntity, pageable);
-        return ResponseEntity.ok(loans);
-    }
+
+
 
     @Operation(summary = "Obtener préstamos por DNI de usuario",
             description = "Retorna una página de préstamos asociados al usuario identificado por su DNI")
@@ -211,4 +189,25 @@ public class LoanController {
         return ResponseEntity.noContent().build();
     }
 
+
+
+    @GetMapping
+    public ResponseEntity<?> getAll(
+            @Parameter(description = "Número de la página") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamaño de la página") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "Campo para ordenar") @RequestParam(defaultValue = "startDate") String sortBy,
+            @Parameter(description = "Dirección del ordenamiento") @RequestParam(defaultValue = "asc") String direction,
+            @Parameter(description = "Estado de los prestamos: 'ACTIVE' ,ARCHIVED  'DEFEATED'") @RequestParam(defaultValue = "ACTIVE") String status) {  // Añadido el parámetro de estado
+
+        // Convertir el String 'status' a StatusEntity (enum)
+        StatusEntity statusEntity = StatusEntity.valueOf(status.toUpperCase()); // Convertir String a enum StatusEntity
+
+        // Creación del Pageable con la paginación y ordenamiento
+        Pageable pageable = PageableUtil.createPageable(page, size, sortBy, direction);
+
+        // Llamar al servicio para obtener los usuarios filtrados por estado
+        Page<LoanDto> loanDtos = iLoanServices.listLoansByStatus(statusEntity, pageable); // Pasar el StatusEntity al servicio
+
+        return ResponseEntity.ok(loanDtos);
+    }
 }
