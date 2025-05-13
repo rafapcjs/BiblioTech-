@@ -65,26 +65,7 @@ public class LoanServicesImpl implements ILoanServices {
         iCopiesRepository.save(copy);
     }
 
-
-        // … repositorios inyectados …
-
-        @Override
-        @Transactional
-        public void updateLoanTerms(UUID loanId, UpdateLoanRequest updateLoanRequest) {
-            Loan loan = loanRepository.findByUuid(loanId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Préstamo no encontrado: " + loanId));
-
-            if (loan.getStatusEntity() != StatusEntity.ACTIVE) {
-                throw new IllegalStateException("Sólo se pueden editar plazos de préstamos activos.");
-            }
-
-          //  loan.setStartDate(updateLoanRequest.);
-          //  loan.setDueDate(dueDate);
-            loanRepository.save(loan);
-        }
-
-
-        @Override
+    @Override
     public Page<LoanDto> findByUserDni(String dni, Pageable pageable) {
         return loanRepository
                 .findByUserDni(dni, pageable)
@@ -149,7 +130,83 @@ public class LoanServicesImpl implements ILoanServices {
                         .build()
                 );
     }
+    @Override
+    @Transactional
+    public void updateLoanTerms(UUID loanId, UpdateLoanRequest req) {
+        Loan loan = loanRepository.findByUuid(loanId)
+                .orElseThrow(() -> new ResourceNotFoundException("Préstamo no encontrado: " + loanId));
 
+        if (loan.getStatusEntity() != StatusEntity.ACTIVE) {
+            throw new IllegalStateException("Solo se pueden editar préstamos activos.");
+        }
+
+        // Validación extra por seguridad
+        if (req.getStartDate().isAfter(req.getDueDate())) {
+            throw new IllegalArgumentException(
+                    "La fecha de inicio (" + req.getStartDate() +
+                            ") no puede ser posterior a la fecha de devolución prevista (" + req.getDueDate() + ")."
+            );
+        }
+
+        // Actualiza solo startDate y dueDate
+        loan.setStartDate(req.getStartDate());
+        loan.setDueDate(req.getDueDate());
+
+        loanRepository.save(loan);
+    }
+    @Override
+    @Transactional
+    public int markOverdueAsDefeated() {
+        // 1) Marcar préstamos vencidos
+        int updatedLoans = loanRepository.markOverdueAsDefeated(
+                StatusEntity.ACTIVE,
+                StatusEntity.DEFEATED,
+                LocalDate.now()
+        );
+
+        // 2) Desactivar usuarios que tengan al menos un préstamo vencido
+        int deactivatedUsers = userRepository.deactivateUsersWithOverdueLoans(
+                LocalDate.now(),
+                StatusEntity.ACTIVE,
+                StatusEntity.ARCHIVED   // o el enum que uses para inactivar
+        );
+
+        // (opcional) log
+        System.out.printf("Scheduler: %d préstamos DEFEATED, %d usuarios ARCHIVE.%n",
+                updatedLoans, deactivatedUsers);
+
+        return updatedLoans;
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteLoan(UUID loanId) {
+
+        // 1) Verificar que el préstamo exista
+        Loan loan = loanRepository.findByUuid(loanId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Préstamo no encontrado: " + loanId));
+
+        // 2) Validar que sea elegible para eliminación (p. ej. ACTIVO)
+        if (loan.getStatusEntity() != StatusEntity.ACTIVE) {
+            throw new ConflictException(
+                    "Solo se puede eliminar un préstamo en estado ACTIVO. "
+                            + "Estado actual: " + loan.getStatusEntity());
+        }
+
+        // 3) Referencia a la copia asociada ANTES de eliminar
+        Copies copy = loan.getCopy();
+
+        // 4) Eliminar el préstamo
+        loanRepository.delete(loan);
+
+        // 5) Restaurar la copia a ACTIVA
+        copy.setStatusEntity(StatusEntity.ACTIVE);
+        iCopiesRepository.save(copy);
+
+
+    }
 
 
 }

@@ -1,13 +1,12 @@
 package com.bookLibrary.rafapcjs;
 
-import com.bookLibrary.rafapcjs.categories.presentation.dto.CategoryDto;
-import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.UUID;
-
- @SpringBootApplication(scanBasePackages = "com.bookLibrary.rafapcjs")
+ @EnableScheduling
+@SpringBootApplication(scanBasePackages = "com.bookLibrary.rafapcjs")
 
  public class RafapcjsApplication {
 

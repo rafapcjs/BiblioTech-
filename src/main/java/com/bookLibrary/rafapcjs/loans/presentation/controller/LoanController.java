@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -145,13 +146,69 @@ public class LoanController {
     }
 
 
-    /** Actualiza fechas de inicio y vencimiento de un préstamo activo */
+    /**
+     * Actualiza las fechas de inicio y vencimiento de un préstamo activo
+     */
+    @Operation(
+            summary = "Actualizar fechas de un préstamo",
+            description = "Permite modificar la fecha de inicio y la fecha prevista de devolución de un préstamo que esté en estado ACTIVE"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Fechas actualizadas correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Préstamo no encontrado", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    })
     @PutMapping("/{loanId}")
     public ResponseEntity<Void> updateLoanTerms(
+            @Parameter(in = ParameterIn.PATH, description = "UUID del préstamo a actualizar", required = true)
             @PathVariable UUID loanId,
+            @Parameter(
+                    description = "Payload con las nuevas fechas de inicio y vencimiento",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UpdateLoanRequest.class))
+            )
             @Valid @RequestBody UpdateLoanRequest request
     ) {
-       // iLoanServices.updateLoanTerms(loanId, request.s(), request.dueDate());
+        iLoanServices.updateLoanTerms(loanId, request);
         return ResponseEntity.noContent().build();
     }
+    @Operation(
+            summary     = "Eliminar un préstamo",
+            description = """
+                  Elimina el préstamo identificado por <code>loanId</code>.
+                  • Solo se elimina si el estado del préstamo es <code>ACTIVE</code>.  
+                  • Al eliminar: la copia asociada pasa automáticamente a <code>ACTIVE</code>
+                    y vuelve a estar disponible para nuevos préstamos.
+                  • Devuelve <code>204 No Content</code> si la operación es exitosa.
+                  """,
+            operationId = "deleteLoan"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Préstamo eliminado y copia restaurada"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description  = "El préstamo no está en estado ACTIVO",
+                    content      = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description  = "Préstamo no encontrado",
+                    content      = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @Parameter(
+            name        = "loanId",
+            description = "UUID del préstamo a eliminar",
+            required    = true,
+            example     = "a3faef3e-8c11-4c9e-9af8-344cc2c337ab"
+    )
+    @DeleteMapping("/delete/{loanId}")
+    public ResponseEntity<Void> deleteLoan(@PathVariable UUID loanId) {
+
+        iLoanServices.deleteLoan(loanId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

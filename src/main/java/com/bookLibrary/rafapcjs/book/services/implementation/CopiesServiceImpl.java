@@ -7,6 +7,7 @@ import com.bookLibrary.rafapcjs.book.persistencie.repositories.ICopiesRepository
 import com.bookLibrary.rafapcjs.book.presentation.dto.CopyDto;
 import com.bookLibrary.rafapcjs.book.presentation.payload.CopyPayload;
 import com.bookLibrary.rafapcjs.book.services.interfaces.ICopiesServices;
+import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
 import com.bookLibrary.rafapcjs.commons.exception.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,6 +35,21 @@ public class CopiesServiceImpl implements ICopiesServices {
         copies.setBook(book);
         iCopiesRepository.save(copies);
     }
+
+    @Transactional(readOnly = true)
+    public List<CopyDto> getActiveCopiesByBook(UUID bookId) {
+
+         iBooksRepository.findByUuid(bookId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Libro no existe: " + bookId));
+
+         return iCopiesRepository
+                .findActiveByBookId(bookId, StatusEntity.ACTIVE)   // asegúrate de que el método exista
+                .stream()
+                .map(c -> new CopyDto(c.getUuid()))
+                .toList();
+    }
+
 
     @Override
     public void update(CopyPayload copyPayload, UUID uuid) {

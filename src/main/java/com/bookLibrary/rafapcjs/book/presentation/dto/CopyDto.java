@@ -1,4 +1,5 @@
 package com.bookLibrary.rafapcjs.book.presentation.dto;
 
-public class CopyDto {
-}
+import java.util.UUID;
+
+public record CopyDto(UUID id) {}
