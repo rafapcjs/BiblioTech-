@@ -124,7 +124,22 @@ private  final ICopiesServices  iCopiesServices;
         return ResponseEntity.ok(result);
     }
 
-
+    @Operation(
+            summary = "Obtener el total de copias",
+            description = "Devuelve la cantidad total de copias registradas en la biblioteca, sin filtrar por estado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cantidad total obtenida",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content)
+    })
+    @GetMapping("/copies/count")
+    public ResponseEntity<Long> countAllCopies() {
+        long total = iCopiesServices.countAllCopies();
+        return ResponseEntity.ok(total);
+    }
 
 
     @GetMapping()

@@ -68,6 +68,11 @@ public class UserServicesImpl implements IUserServices {
         return users.map(user -> modelMapper.map(user, UserDto.class));
     }
 
+    @Override
+    public long countByStatusEntity() {
+        return userRepository.countByStatusEntity(StatusEntity.ACTIVE);
+    }
+
 
     @Override
     @Transactional(readOnly = true)

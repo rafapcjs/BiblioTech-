@@ -40,5 +40,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("activeStatus") StatusEntity activeStatus,
             @Param("newStatus")    StatusEntity newStatus
     );
+    long countByStatusEntity(StatusEntity statusEntity);
 
 }

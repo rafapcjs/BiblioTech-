@@ -53,6 +53,8 @@ Optional<Loan>findByUuid(UUID loanId);
         WHERE l.statusEntity = :active
           AND l.dueDate < :today
     """)
+    long countByStatusEntity(StatusEntity statusEntity);
+
     int markOverdueAsDefeated(
             @Param("active")  StatusEntity active,
             @Param("overdue") StatusEntity overdue,

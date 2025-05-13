@@ -17,4 +17,7 @@ public interface ICopiesServices {
     Page<CopyDto> findAll(Pageable pageable); // Obtener todos los ejemplares paginados
     Page<CopyDto> findByBookUuid(UUID bookUuid, Pageable pageable); // Obtener ejemplares por libro
     CopyDto findByUuid(UUID uuid); // Buscar ejemplar por UUID
+
+    long countAllCopies();
+
 }

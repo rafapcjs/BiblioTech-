@@ -130,6 +130,7 @@ public class LoanServicesImpl implements ILoanServices {
                         .build()
                 );
     }
+
     @Override
     @Transactional
     public void updateLoanTerms(UUID loanId, UpdateLoanRequest req) {
@@ -176,6 +177,11 @@ public class LoanServicesImpl implements ILoanServices {
                 updatedLoans, deactivatedUsers);
 
         return updatedLoans;
+    }
+
+    @Override
+    public long countByStatusEntity() {
+        return loanRepository.countByStatusEntity(StatusEntity.ACTIVE);
     }
 
 
