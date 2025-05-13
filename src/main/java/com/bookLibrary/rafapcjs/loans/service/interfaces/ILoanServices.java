@@ -20,4 +20,5 @@ void deliverLoan(UUID loanId);
     void updateLoanTerms(UUID loanId, UpdateLoanRequest updateLoanRequest);
     int markOverdueAsDefeated();
 
+    void deleteLoan (UUID loanId);
 }

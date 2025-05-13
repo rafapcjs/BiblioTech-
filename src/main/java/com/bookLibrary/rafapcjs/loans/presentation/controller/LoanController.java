@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -170,6 +171,43 @@ public class LoanController {
             @Valid @RequestBody UpdateLoanRequest request
     ) {
         iLoanServices.updateLoanTerms(loanId, request);
+        return ResponseEntity.noContent().build();
+    }
+    @Operation(
+            summary     = "Eliminar un préstamo",
+            description = """
+                  Elimina el préstamo identificado por <code>loanId</code>.
+                  • Solo se elimina si el estado del préstamo es <code>ACTIVE</code>.  
+                  • Al eliminar: la copia asociada pasa automáticamente a <code>ACTIVE</code>
+                    y vuelve a estar disponible para nuevos préstamos.
+                  • Devuelve <code>204 No Content</code> si la operación es exitosa.
+                  """,
+            operationId = "deleteLoan"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Préstamo eliminado y copia restaurada"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description  = "El préstamo no está en estado ACTIVO",
+                    content      = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description  = "Préstamo no encontrado",
+                    content      = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @Parameter(
+            name        = "loanId",
+            description = "UUID del préstamo a eliminar",
+            required    = true,
+            example     = "a3faef3e-8c11-4c9e-9af8-344cc2c337ab"
+    )
+    @DeleteMapping("/delete/{loanId}")
+    public ResponseEntity<Void> deleteLoan(@PathVariable UUID loanId) {
+
+        iLoanServices.deleteLoan(loanId);
+
         return ResponseEntity.noContent().build();
     }
 

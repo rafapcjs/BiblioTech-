@@ -26,6 +26,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     long countLoans();      // ← nuevo método
     Page<Loan> findByStatusEntity(StatusEntity status, Pageable pageable);
 Optional<Loan>findByUuid(UUID loanId);
+
     Page<Loan> findByUserDni(String dni ,Pageable pageable);
     @Modifying(clearAutomatically = true)
     @Transactional

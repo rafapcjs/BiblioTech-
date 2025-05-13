@@ -179,5 +179,34 @@ public class LoanServicesImpl implements ILoanServices {
     }
 
 
+    @Override
+    @Transactional
+    public void deleteLoan(UUID loanId) {
+
+        // 1) Verificar que el préstamo exista
+        Loan loan = loanRepository.findByUuid(loanId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Préstamo no encontrado: " + loanId));
+
+        // 2) Validar que sea elegible para eliminación (p. ej. ACTIVO)
+        if (loan.getStatusEntity() != StatusEntity.ACTIVE) {
+            throw new ConflictException(
+                    "Solo se puede eliminar un préstamo en estado ACTIVO. "
+                            + "Estado actual: " + loan.getStatusEntity());
+        }
+
+        // 3) Referencia a la copia asociada ANTES de eliminar
+        Copies copy = loan.getCopy();
+
+        // 4) Eliminar el préstamo
+        loanRepository.delete(loan);
+
+        // 5) Restaurar la copia a ACTIVA
+        copy.setStatusEntity(StatusEntity.ACTIVE);
+        iCopiesRepository.save(copy);
+
+
+    }
+
 
 }

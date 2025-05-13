@@ -1,6 +1,7 @@
 package com.bookLibrary.rafapcjs.book.persistencie.repositories;
 
 import com.bookLibrary.rafapcjs.book.persistencie.entities.Book;
+import com.bookLibrary.rafapcjs.book.persistencie.entities.Copies;
 import com.bookLibrary.rafapcjs.book.presentation.dto.BookDtoDetails;
 import com.bookLibrary.rafapcjs.book.presentation.dto.BookWithQuantityCopies;
 import com.bookLibrary.rafapcjs.commons.enums.StatusEntity;
@@ -18,7 +19,6 @@ import java.util.UUID;
 
 @Repository
 public interface IBooksRepository  extends JpaRepository<Book,Long> {
-
 
 
 
