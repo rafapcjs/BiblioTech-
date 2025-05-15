@@ -55,9 +55,18 @@ Optional<Loan>findByUuid(UUID loanId);
     """)
     long countByStatusEntity(StatusEntity statusEntity);
 
+    @Modifying
+    @Transactional
+    @Query("""
+    UPDATE Loan l
+    SET l.statusEntity = :overdue
+    WHERE l.statusEntity = :active
+      AND l.dueDate < :today
+""")
     int markOverdueAsDefeated(
-            @Param("active")  StatusEntity active,
+            @Param("active") StatusEntity active,
             @Param("overdue") StatusEntity overdue,
-            @Param("today")   LocalDate today
+            @Param("today") LocalDate today
     );
+
 }

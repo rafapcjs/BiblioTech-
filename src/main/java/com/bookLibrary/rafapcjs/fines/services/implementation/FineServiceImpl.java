@@ -143,6 +143,10 @@ private  final UserRepository userRepository;
         );
      }
 
+    @Override
+    public long countByStatusEntity() {
+        return finesRepository.countByStatusEntity(StatusEntity.PENDING);
+    }
 
 
     @Override

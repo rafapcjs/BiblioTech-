@@ -34,5 +34,6 @@ Optional<Fine>findByUuid(UUID uuid);
 
 Page<Fine>findByStatusEntity(StatusEntity statusEntity, Pageable pageable);
 
+    long countByStatusEntity(StatusEntity statusEntity);
 
 }

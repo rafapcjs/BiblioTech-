@@ -22,6 +22,7 @@ void paidFine (UUID  uuid);
      * Lista todas las multas existentes.
      */
     Page<FineDto> findByStatusEntity(StatusEntity statusEntity, Pageable pageable) ;
+    long countByStatusEntity();
 
     List<FineDto> findAllFines();
 }
