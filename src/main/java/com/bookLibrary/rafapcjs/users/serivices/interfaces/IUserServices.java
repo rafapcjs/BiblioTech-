@@ -12,7 +12,7 @@ public interface IUserServices {
     void save (UserCreateRequest userCreateRequest);
     void update (UserUpdateRequest userUpdateRequest ,String dni);
        Page<UserDto> findByStatusEntity(StatusEntity statusEntity, Pageable pageable) ;
-
+    long countByStatusEntity();
     UserDto findByEmail(String email);
     UserDto findByDni(String dni);
   void unNeableUser(String email);

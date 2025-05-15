@@ -210,4 +210,28 @@ public class LoanController {
 
         return ResponseEntity.ok(loanDtos);
     }
+
+    @Operation(
+            summary     = "Contar préstamos activos",
+            description = "Devuelve la cantidad total de préstamos con estado ACTIVE."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description  = "Conteo exitoso",
+                    content      = @Content(mediaType = "application/json",
+                            schema     = @Schema(implementation = Long.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description  = "Error interno del servidor",
+                    content      = @Content
+            )
+    })
+    @GetMapping("/count/active")
+    public ResponseEntity<Long> countActiveLoans() {
+        long total = iLoanServices.countByStatusEntity();   // llama a tu método @Override
+        return ResponseEntity.ok(total);
+    }
+
 }

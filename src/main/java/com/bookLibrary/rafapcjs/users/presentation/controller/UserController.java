@@ -8,6 +8,8 @@ import com.bookLibrary.rafapcjs.users.presentation.payload.UserUpdateRequest;
 import com.bookLibrary.rafapcjs.users.serivices.interfaces.IUserServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -165,6 +167,29 @@ public class UserController {
 
         return ResponseEntity.ok(users);
     }
-
+    @Operation(
+            summary = "Contar usuarios activos",
+            description = "Devuelve la cantidad total de usuarios con estado ACTIVE."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Conteo exitoso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor",
+                    content = @Content
+            )
+    })
+    @GetMapping("/count/active")
+    public ResponseEntity<Long> countActiveUsers() {
+        long total = iUserServices.countByStatusEntity();
+        return ResponseEntity.ok(total);
+    }
 
 }

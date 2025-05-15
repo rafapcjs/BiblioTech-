@@ -76,4 +76,9 @@ iCopiesRepository.delete(copies);
     public CopyDto findByUuid(UUID uuid) {
         return null;
     }
+
+    @Override
+    public long countAllCopies() {
+        return iCopiesRepository.count();
+    }
 }

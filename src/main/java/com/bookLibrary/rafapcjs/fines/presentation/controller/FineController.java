@@ -31,6 +31,19 @@ public class FineController {
     private final IFineService fineService;
 
 
+
+    @GetMapping("/count/active")
+    @Operation(
+            summary = "Count active fines",
+            description = "Este método cuenta el número de multas que están activas en el sistema. "
+                    + "Solo se consideran aquellas multas cuyo estado es 'ACTIVE'. "
+                    + "Este endpoint puede ser útil para realizar un seguimiento de las multas activas en el sistema."
+    )
+    public long countByStatusEntity() {
+        return fineService.countByStatusEntity();  // Llama al servicio para obtener el conteo
+    }
+
+
     @GetMapping
     @Operation(summary = "Listado de  multas segun estado")
     public ResponseEntity<?> getAll(
